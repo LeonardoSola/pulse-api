@@ -1,17 +1,46 @@
 package main
 
-import "github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
+import (
+	"fmt"
+
+	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/http"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
+	"github.com/LeonardoSola/wagon-api/adapters/database/postgres"
+	"github.com/LeonardoSola/wagon-api/internal/config"
+
+	stdhttp "net/http"
+)
 
 func main() {
-	err := whastapp.Init()
+	err := config.Load()
 	if err != nil {
-		log.Fatalf("Failed to initialize WhatsApp client: %v", err)
+		panic("❌ Config: " + err.Error())
 	}
+	fmt.Println("✅ Config")
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	<-c
+	err = postgres.NewConnection()
+	if err != nil {
+		panic("❌ Database: " + err.Error())
+	}
+	fmt.Println("✅ Database")
+	defer postgres.Close()
 
-	logger.Infof("Shutting down...")
-	client.Disconnect()
+	err = whastapp.InitContainer()
+	if err != nil {
+		panic("❌ WhatsApp: " + err.Error())
+	}
+	fmt.Println("✅ WhatsApp")
+
+	bootstrap.Init()
+
+	router := http.Init()
+	if err != nil {
+		panic("❌ HTTP handlers: " + err.Error())
+	}
+	fmt.Println("✅ HTTP | Port" + config.Config.Server.Port)
+
+	if err := stdhttp.ListenAndServe(config.Config.Server.Port, router); err != nil {
+		panic("❌ HTTP server: " + err.Error())
+	}
 }
