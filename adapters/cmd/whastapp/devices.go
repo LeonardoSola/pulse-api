@@ -6,6 +6,7 @@ import (
 
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp/events"
 	"go.mau.fi/whatsmeow"
+	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/types"
 	waLog "go.mau.fi/whatsmeow/util/log"
 )
@@ -27,22 +28,35 @@ func (s *WhatsappService) CreateDevice(ctx context.Context) (qrChan <-chan strin
 	return qrChan, jidChan, nil
 }
 
-func (s *WhatsappService) GetDevice(ctx context.Context, deviceID string) (string, error) {
+func (s *WhatsappService) getDevice(ctx context.Context, deviceID string) (*store.Device, error) {
 	jid, err := types.ParseJID(deviceID)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	device, err := s.container.GetDevice(ctx, jid)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if device == nil {
-		return "", fmt.Errorf("device not found")
+		return nil, fmt.Errorf("device not found")
 	}
 
-	return jid.String(), nil
+	return device, nil
+}
+
+func (s *WhatsappService) CheckDevice(ctx context.Context, deviceID string) (bool, error) {
+	device, err := s.getDevice(ctx, deviceID)
+	if err != nil {
+		return false, err
+	}
+
+	if device == nil {
+		return false, fmt.Errorf("device not found")
+	}
+
+	return device.Initialized, nil
 }
 
 func (s *WhatsappService) DeleteDevice(ctx context.Context, deviceID string) error {

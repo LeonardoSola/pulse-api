@@ -93,9 +93,9 @@ func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrC
 	}
 
 	if device.JID != nil {
-		jid, err := s.whatsappService.GetDevice(ctx, *device.JID)
-		if err == nil {
-			device.JID = &jid
+		ok, err := s.whatsappService.CheckDevice(ctx, *device.JID)
+		if err == nil && ok {
+			device.IsActive = true
 			err = s.devicesRepository.Update(ctx, device)
 			if err != nil {
 				return nil, err
