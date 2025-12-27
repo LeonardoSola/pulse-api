@@ -12,20 +12,20 @@ var (
 		Status:  http.StatusInternalServerError,
 		Message: "Error selecting device",
 		Info:    "error selecting device",
-		Level:   custom_error.Error,
+		Level:   custom_error.LevelError,
 	}
 
 	ErrDeviceNotFound = custom_error.CustomError{
 		Status:  http.StatusNotFound,
 		Message: "Device not found",
 		Info:    "device not found",
-		Level:   custom_error.Info,
+		Level:   custom_error.LevelInfo,
 	}
 
 	ErrDeviceInvalidName = custom_error.CustomError{
 		Status:  http.StatusBadRequest,
 		Message: fmt.Sprintf("Device invalid name, must be between %d and %d characters", NameMinLength, NameMaxLength),
 		Info:    "name is invalid",
-		Level:   custom_error.Info,
+		Level:   custom_error.LevelInfo,
 	}
 )

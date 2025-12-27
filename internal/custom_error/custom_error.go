@@ -8,10 +8,10 @@ import (
 type ErrorLevel int8
 
 const (
-	Debug   ErrorLevel = -1 // Log only debug mode
-	Info    ErrorLevel = 0  // Not log
-	Warning ErrorLevel = 1  // Log
-	Error   ErrorLevel = 2  // Log and alert
+	LevelDebug ErrorLevel = -4
+	LevelInfo  ErrorLevel = 0
+	LevelWarn  ErrorLevel = 4
+	LevelError ErrorLevel = 8
 )
 
 type CustomError struct {
@@ -25,10 +25,10 @@ type CustomError struct {
 	Info string `json:"error_info"`
 
 	/* Level of the error:
-	   -1 - Debug		(Logged only debug mode)
+	   -4 - Debug		(Logged only debug mode)
 		0 - Info		(not logged)
-		1 - Warning		(Logged)
-		2 - Error		(Logged and alerted)
+		4 - Warning		(Logged)
+		8 - Error		(Logged and alerted)
 	*/
 	Level ErrorLevel `json:"-"`
 

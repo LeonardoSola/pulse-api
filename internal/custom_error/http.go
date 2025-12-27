@@ -7,6 +7,6 @@ var (
 		Status:  http.StatusBadRequest,
 		Message: "Invalid body",
 		Info:    "Invalid body",
-		Level:   Info,
+		Level:   LevelInfo,
 	}
 )

@@ -8,29 +8,37 @@ import (
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
 	"github.com/LeonardoSola/wagon-api/adapters/database/postgres"
 	"github.com/LeonardoSola/wagon-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/logger"
 
 	stdhttp "net/http"
 )
 
-func main() {
+func init() {
 	err := config.Load()
 	if err != nil {
 		panic("❌ Config: " + err.Error())
 	}
-	fmt.Println("✅ Config")
 
-	err = postgres.NewConnection()
+	err = logger.Init()
+	if err != nil {
+		panic("❌ Logger: " + err.Error())
+	}
+	logger.Log.Info("✅ Logger")
+}
+
+func main() {
+	err := postgres.NewConnection()
 	if err != nil {
 		panic("❌ Database: " + err.Error())
 	}
-	fmt.Println("✅ Database")
+	logger.Log.Info("✅ Database")
 	defer postgres.Close()
 
 	err = whastapp.InitContainer()
 	if err != nil {
 		panic("❌ WhatsApp: " + err.Error())
 	}
-	fmt.Println("✅ WhatsApp")
+	logger.Log.Info("✅ WhatsApp")
 
 	bootstrap.Init()
 
@@ -38,9 +46,9 @@ func main() {
 	if err != nil {
 		panic("❌ HTTP handlers: " + err.Error())
 	}
-	fmt.Println("✅ HTTP | Port" + config.Config.Server.Port)
+	logger.Log.Info("✅ HTTP", "port", config.Config.Server.Port)
 
-	if err := stdhttp.ListenAndServe(config.Config.Server.Port, router); err != nil {
+	if err := stdhttp.ListenAndServe(fmt.Sprintf(":%d", config.Config.Server.Port), router); err != nil {
 		panic("❌ HTTP server: " + err.Error())
 	}
 }

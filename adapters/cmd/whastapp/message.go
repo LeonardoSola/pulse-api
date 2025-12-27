@@ -2,9 +2,9 @@ package whastapp
 
 import (
 	"context"
-	"fmt"
 
 	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
+	"github.com/LeonardoSola/wagon-api/internal/logger"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
@@ -29,7 +29,7 @@ func (s *WhatsappService) SendTextMessage(ctx context.Context, message message_e
 		},
 	)
 
-	fmt.Println(resp)
+	logger.Log.Debug("Message sent", "response", resp)
 
 	return err
 }

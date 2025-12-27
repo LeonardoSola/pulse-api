@@ -7,6 +7,6 @@ var (
 		Status:  http.StatusUnauthorized,
 		Message: "Unauthorized",
 		Info:    "Unauthorized",
-		Level:   Info,
+		Level:   LevelInfo,
 	}
 )

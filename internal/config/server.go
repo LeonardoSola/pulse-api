@@ -1,13 +1,12 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 )
 
 type serverConfigStruct struct {
-	Port string
+	Port int
 }
 
 func LoadServerEnvironment() (serverConfigStruct, error) {
@@ -17,6 +16,6 @@ func LoadServerEnvironment() (serverConfigStruct, error) {
 	}
 
 	return serverConfigStruct{
-		Port: fmt.Sprintf(":%d", port),
+		Port: port,
 	}, nil
 }
