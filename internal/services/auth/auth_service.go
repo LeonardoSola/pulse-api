@@ -1,4 +1,4 @@
-package auth
+package auth_service
 
 import (
 	"github.com/LeonardoSola/wagon-api/internal/config"

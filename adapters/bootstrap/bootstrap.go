@@ -3,15 +3,15 @@ package bootstrap
 import (
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
 	database "github.com/LeonardoSola/wagon-api/adapters/database/postgres"
-	"github.com/LeonardoSola/wagon-api/domain/auth"
-	"github.com/LeonardoSola/wagon-api/domain/device"
-	"github.com/LeonardoSola/wagon-api/domain/message"
+	auth_service "github.com/LeonardoSola/wagon-api/internal/services/auth"
+	device_service "github.com/LeonardoSola/wagon-api/internal/services/device"
+	message_service "github.com/LeonardoSola/wagon-api/internal/services/message"
 )
 
 type services struct {
-	AuthService    *auth.JWTService
-	DeviceService  *device.DeviceService
-	MessageService *message.MessageService
+	AuthService    *auth_service.JWTService
+	DeviceService  *device_service.DeviceService
+	MessageService *message_service.MessageService
 }
 
 var Services *services
@@ -21,8 +21,8 @@ func Init() {
 	whats := whastapp.NewWhatsappService()
 
 	Services = &services{
-		AuthService:    auth.NewJWTService(),
-		DeviceService:  device.NewDeviceService(db.DevicesRepository, whats),
-		MessageService: message.NewMessageService(nil, whats),
+		AuthService:    auth_service.NewJWTService(),
+		DeviceService:  device_service.NewDeviceService(db.DevicesRepository, whats),
+		MessageService: message_service.NewMessageService(nil, whats),
 	}
 }

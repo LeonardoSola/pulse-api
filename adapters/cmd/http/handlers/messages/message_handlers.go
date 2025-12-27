@@ -5,7 +5,7 @@ import (
 
 	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/utils"
-	"github.com/LeonardoSola/wagon-api/domain/message"
+	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -14,7 +14,7 @@ func InitMessages(router *chi.Mux) {
 }
 
 func createMessage(w http.ResponseWriter, r *http.Request) {
-	message := message.Message{}
+	message := message_entity.Message{}
 	err := utils.DecodeBody(r, &message)
 	if err != nil {
 		utils.ErrorResponse(err, w)

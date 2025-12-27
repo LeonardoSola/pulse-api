@@ -1,4 +1,4 @@
-package device
+package device_service
 
 type CreateDeviceDTO struct {
 	Name string `json:"name"`

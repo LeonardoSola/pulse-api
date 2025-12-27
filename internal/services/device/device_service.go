@@ -1,56 +1,57 @@
-package device
+package device_service
 
 import (
 	"context"
 	"errors"
 	"fmt"
 
+	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
 	"github.com/LeonardoSola/wagon-api/internal/ports"
 	"github.com/jackc/pgx/v5"
 )
 
 type DeviceService struct {
-	devicesRepository DevicesRepository
+	devicesRepository ports.DevicesRepository
 	whatsappService   ports.WhatsappService
 }
 
-func NewDeviceService(devicesRepository DevicesRepository, whatsappService ports.WhatsappService) *DeviceService {
+func NewDeviceService(devicesRepository ports.DevicesRepository, whatsappService ports.WhatsappService) *DeviceService {
 	return &DeviceService{devicesRepository, whatsappService}
 }
 
-func (s *DeviceService) CreateDevice(ctx context.Context, payload CreateDeviceDTO) (Device, error) {
-	device := NewDevice(payload.Name)
+func (s *DeviceService) CreateDevice(ctx context.Context, payload CreateDeviceDTO) (device_entity.Device, error) {
+	dev := device_entity.NewDevice(payload.Name)
 
-	err := device.Validate()
+	err := dev.Validate()
 	if err != nil {
-		return Device{}, err
+		return device_entity.Device{}, err
 	}
 
-	err = s.devicesRepository.Create(ctx, device)
+	err = s.devicesRepository.Create(ctx, dev)
 	if err != nil {
-		return Device{}, err
+		return device_entity.Device{}, err
 	}
 
-	return device, nil
+	return dev, nil
 }
 
-func (s *DeviceService) GetDevices(ctx context.Context) ([]Device, error) {
+func (s *DeviceService) GetDevices(ctx context.Context) ([]device_entity.Device, error) {
 	devices, err := s.devicesRepository.GetAll(ctx)
 	if err != nil {
-		return []Device{}, err
+		return []device_entity.Device{}, err
 	}
 
 	return devices, nil
 }
 
-func (s *DeviceService) GetDevice(ctx context.Context, deviceID string) (Device, error) {
+func (s *DeviceService) GetDevice(ctx context.Context, deviceID string) (device_entity.Device, error) {
 	device, err := s.devicesRepository.Get(ctx, deviceID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return Device{}, ErrDeviceNotFound
+			return device_entity.Device{}, device_entity.ErrDeviceNotFound
 		}
 
-		return Device{}, ErrDeviceSelect.SetError(err)
+		return device_entity.Device{}, device_entity.ErrDeviceSelect.SetError(err)
 	}
 
 	return device, nil

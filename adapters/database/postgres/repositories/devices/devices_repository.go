@@ -1,23 +1,24 @@
-package devices_repository
+package device_repository
 
 import (
 	"context"
 
+	"github.com/LeonardoSola/wagon-api/internal/ports"
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/LeonardoSola/wagon-api/domain/device"
+	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
 )
 
 type DevicesRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewDevicesRepository(db *pgxpool.Pool) device.DevicesRepository {
+func NewDevicesRepository(db *pgxpool.Pool) ports.DevicesRepository {
 	return &DevicesRepository{db: db}
 }
 
-func (r *DevicesRepository) Create(ctx context.Context, device device.Device) error {
+func (r *DevicesRepository) Create(ctx context.Context, device device_entity.Device) error {
 	dml := `INSERT INTO devices (id, name) VALUES ($1, $2)`
 
 	_, err := r.db.Exec(ctx, dml, device.ID, device.Name)
@@ -28,34 +29,34 @@ func (r *DevicesRepository) Create(ctx context.Context, device device.Device) er
 	return nil
 }
 
-func (r *DevicesRepository) GetAll(ctx context.Context) ([]device.Device, error) {
+func (r *DevicesRepository) GetAll(ctx context.Context) ([]device_entity.Device, error) {
 	dml := `SELECT * FROM devices`
 
 	rows, err := r.db.Query(ctx, dml)
 	if err != nil {
-		return []device.Device{}, err
+		return []device_entity.Device{}, err
 	}
 
-	return pgx.CollectRows(rows, pgx.RowToStructByName[device.Device])
+	return pgx.CollectRows(rows, pgx.RowToStructByName[device_entity.Device])
 }
 
-func (r *DevicesRepository) Get(ctx context.Context, deviceID string) (device.Device, error) {
+func (r *DevicesRepository) Get(ctx context.Context, deviceID string) (device_entity.Device, error) {
 	dml := `SELECT * FROM devices WHERE id = $1`
 
 	rows, err := r.db.Query(ctx, dml, deviceID)
 	if err != nil {
-		return device.Device{}, err
+		return device_entity.Device{}, err
 	}
 
-	dev, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device.Device])
+	dev, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
 	if err != nil {
-		return device.Device{}, err
+		return device_entity.Device{}, err
 	}
 
 	return dev, nil
 }
 
-func (r *DevicesRepository) Update(ctx context.Context, device device.Device) error {
+func (r *DevicesRepository) Update(ctx context.Context, device device_entity.Device) error {
 	dml := `UPDATE devices SET name = $1, updated_at = NOW() WHERE id = $2`
 
 	_, err := r.db.Exec(ctx, dml, device.Name, device.ID)

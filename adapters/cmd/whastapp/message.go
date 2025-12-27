@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/LeonardoSola/wagon-api/domain/message"
+	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
 	waLog "go.mau.fi/whatsmeow/util/log"
 )
 
-func (s *WhatsappService) SendTextMessage(ctx context.Context, message message.Message) error {
+func (s *WhatsappService) SendTextMessage(ctx context.Context, message message_entity.Message) error {
 	device, err := s.getDevice(ctx, message.DeviceID)
 	if err != nil {
 		return err

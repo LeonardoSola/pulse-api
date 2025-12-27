@@ -1,4 +1,4 @@
-package message
+package message_entity
 
 import "time"
 

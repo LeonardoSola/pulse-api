@@ -5,7 +5,7 @@ import (
 
 	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/utils"
-	"github.com/LeonardoSola/wagon-api/domain/device"
+	device_service "github.com/LeonardoSola/wagon-api/internal/services/device"
 	chi "github.com/go-chi/chi/v5"
 )
 
@@ -42,7 +42,7 @@ func getDevice(w http.ResponseWriter, r *http.Request) {
 }
 
 func createDevice(w http.ResponseWriter, r *http.Request) {
-	var payload device.CreateDeviceDTO
+	var payload device_service.CreateDeviceDTO
 
 	err := utils.DecodeBody(r, &payload)
 	if err != nil {
@@ -62,7 +62,7 @@ func createDevice(w http.ResponseWriter, r *http.Request) {
 func updateDevice(w http.ResponseWriter, r *http.Request) {
 	deviceID := chi.URLParam(r, "id")
 
-	var payload device.UpdateDeviceDTO
+	var payload device_service.UpdateDeviceDTO
 
 	err := utils.DecodeBody(r, &payload)
 	if err != nil {

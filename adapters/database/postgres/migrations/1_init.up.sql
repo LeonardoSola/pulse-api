@@ -9,7 +9,7 @@ CREATE TABLE devices (
     is_active BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-ALTER TABLE public.devices ADD CONSTRAINT devices_whatsmeow_device_fk FOREIGN KEY (jid) REFERENCES public.whatsmeow_device(jid) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE public.devices ADD CONSTRAINT device_whatsmeow_device_fk FOREIGN KEY (jid) REFERENCES public.whatsmeow_device(jid) ON DELETE SET NULL ON UPDATE CASCADE;
 
 
 -- +goose Down
