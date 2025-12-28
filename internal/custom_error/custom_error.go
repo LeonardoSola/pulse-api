@@ -1,8 +1,11 @@
 package custom_error
 
 import (
+	"context"
 	"fmt"
-	"log"
+	"log/slog"
+
+	"github.com/LeonardoSola/wagon-api/internal/logger"
 )
 
 type ErrorLevel int8
@@ -46,7 +49,7 @@ func (err CustomError) Error() string {
 		errMessage = "; " + err.Err.Error()
 	}
 
-	log.Println(errMessage)
+	logger.Log.Log(context.Background(), slog.Level(err.Level), "Error", "error", errMessage)
 
 	return err.ToString()
 }

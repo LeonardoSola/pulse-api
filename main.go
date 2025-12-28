@@ -43,11 +43,8 @@ func main() {
 	bootstrap.Init()
 
 	router := http.Init()
-	if err != nil {
-		panic("❌ HTTP handlers: " + err.Error())
-	}
-	logger.Log.Info("✅ HTTP", "port", config.Config.Server.Port)
 
+	logger.Log.Info("✅ HTTP", "port", config.Config.Server.Port)
 	if err := stdhttp.ListenAndServe(fmt.Sprintf(":%d", config.Config.Server.Port), router); err != nil {
 		panic("❌ HTTP server: " + err.Error())
 	}

@@ -1,4 +1,4 @@
-package devices
+package device_handler
 
 import (
 	"net/http"

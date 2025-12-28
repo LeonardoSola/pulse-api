@@ -19,12 +19,10 @@ func SendResponse(data any, status int, w http.ResponseWriter) {
 		Data: data,
 	}
 
-	jsonData, err := json.Marshal(response)
+	err := writeJSON(w, response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-
-	w.Write(jsonData)
 }
 
 type Error struct {
@@ -42,6 +40,8 @@ func ErrorResponse(data error, w http.ResponseWriter) {
 			Status:  e.Status,
 		}
 
+		w.WriteHeader(e.Status)
+
 		if e.Err != nil && config.Config.Env == "development" {
 			response.Info = e.Err.Error()
 			response.Level = int(e.Level)
@@ -51,12 +51,23 @@ func ErrorResponse(data error, w http.ResponseWriter) {
 			Message: data.Error(),
 			Status:  http.StatusInternalServerError,
 		}
+
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	jsonData, err := json.Marshal(response)
+	err := writeJSON(w, response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
 
-	w.Write(jsonData)
+func writeJSON(w http.ResponseWriter, data any) error {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(jsonData)
+
+	return err
 }
