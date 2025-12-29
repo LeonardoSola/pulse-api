@@ -21,6 +21,12 @@ var (
 		Info:    "device not found",
 		Level:   custom_error.LevelInfo,
 	}
+	ErrDeviceNotLoggedIn = custom_error.CustomError{
+		Status:  http.StatusInternalServerError,
+		Message: "Device not logged in",
+		Info:    "device not logged in",
+		Level:   custom_error.LevelError,
+	}
 
 	ErrDeviceInvalidName = custom_error.CustomError{
 		Status:  http.StatusBadRequest,

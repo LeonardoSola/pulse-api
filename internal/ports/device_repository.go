@@ -6,7 +6,7 @@ import (
 	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
 )
 
-type DevicesRepository interface {
+type DeviceRepository interface {
 	GetAll(ctx context.Context) ([]device_entity.Device, error)
 	Get(ctx context.Context, deviceID string) (device_entity.Device, error)
 	Create(ctx context.Context, device device_entity.Device) error

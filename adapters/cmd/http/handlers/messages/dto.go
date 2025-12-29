@@ -1,6 +1,9 @@
 package message_handler
 
-type CreateMessageDTO struct {
-	Recipient string `json:"recipient"`
-	Text      string `json:"text"`
+import message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
+
+type CreateMessageTextDTO struct {
+	Recipient     string                       `json:"recipient"`
+	RecipientType message_entity.RecipientType `json:"recipient_type"`
+	Text          string                       `json:"text"`
 }

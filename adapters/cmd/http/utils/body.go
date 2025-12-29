@@ -10,7 +10,7 @@ import (
 func DecodeBody(r *http.Request, v any) error {
 	err := json.NewDecoder(r.Body).Decode(v)
 	if err != nil {
-		return custom_error.ErrInvalidBody
+		return custom_error.ErrInvalidBody.SetError(err)
 	}
 
 	return nil

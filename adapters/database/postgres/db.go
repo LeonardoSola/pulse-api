@@ -7,11 +7,11 @@ import (
 )
 
 type dbAdapter struct {
-	DevicesRepository ports.DevicesRepository
+	DeviceRepository ports.DeviceRepository
 }
 
 func newDB(conn *pgxpool.Pool) *dbAdapter {
 	return &dbAdapter{
-		DevicesRepository: device_repository.NewDevicesRepository(conn),
+		DeviceRepository: device_repository.NewDeviceRepository(conn),
 	}
 }

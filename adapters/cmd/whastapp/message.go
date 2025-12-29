@@ -2,35 +2,31 @@ package whastapp
 
 import (
 	"context"
-	"fmt"
 
 	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
 )
 
-func (s *WhatsappService) SendTextMessage(ctx context.Context, message message_entity.Message) error {
-	fmt.Println("SendTextMessage", message)
+func (s *WhatsappService) SendTextMessage(ctx context.Context, message message_entity.Message) (messageID string, err error) {
 	client, err := s.getClient(ctx, message.DeviceID)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	recipient, err := types.ParseJID(message.Recipient)
+	recipient, err := types.ParseJID(message.GetRecipient())
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	resp, err := client.SendMessage(
+	sentMessage, err := client.SendMessage(
 		ctx, recipient, &waE2E.Message{
 			Conversation: &message.Text,
 		},
 	)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	fmt.Println("SendTextMessage", resp)
-
-	return nil
+	return sentMessage.ID, nil
 }

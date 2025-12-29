@@ -22,7 +22,7 @@ func Init() {
 
 	Services = &services{
 		AuthService:    auth_service.NewJWTService(),
-		DeviceService:  device_service.NewDeviceService(db.DevicesRepository, whats),
-		MessageService: message_service.NewMessageService(nil, whats),
+		DeviceService:  device_service.NewDeviceService(db.DeviceRepository, whats),
+		MessageService: message_service.NewMessageService(nil, db.DeviceRepository, whats),
 	}
 }

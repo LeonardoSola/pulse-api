@@ -3,7 +3,6 @@ package device_service
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
 	"github.com/LeonardoSola/wagon-api/internal/ports"
@@ -11,12 +10,12 @@ import (
 )
 
 type DeviceService struct {
-	devicesRepository ports.DevicesRepository
-	whatsappService   ports.WhatsappService
+	DeviceRepository ports.DeviceRepository
+	whatsappService  ports.WhatsappService
 }
 
-func NewDeviceService(devicesRepository ports.DevicesRepository, whatsappService ports.WhatsappService) *DeviceService {
-	return &DeviceService{devicesRepository, whatsappService}
+func NewDeviceService(DeviceRepository ports.DeviceRepository, whatsappService ports.WhatsappService) *DeviceService {
+	return &DeviceService{DeviceRepository, whatsappService}
 }
 
 func (s *DeviceService) CreateDevice(ctx context.Context, payload CreateDeviceDTO) (device_entity.Device, error) {
@@ -27,7 +26,7 @@ func (s *DeviceService) CreateDevice(ctx context.Context, payload CreateDeviceDT
 		return device_entity.Device{}, err
 	}
 
-	err = s.devicesRepository.Create(ctx, dev)
+	err = s.DeviceRepository.Create(ctx, dev)
 	if err != nil {
 		return device_entity.Device{}, err
 	}
@@ -36,7 +35,7 @@ func (s *DeviceService) CreateDevice(ctx context.Context, payload CreateDeviceDT
 }
 
 func (s *DeviceService) GetDevices(ctx context.Context) ([]device_entity.Device, error) {
-	devices, err := s.devicesRepository.GetAll(ctx)
+	devices, err := s.DeviceRepository.GetAll(ctx)
 	if err != nil {
 		return []device_entity.Device{}, err
 	}
@@ -45,7 +44,7 @@ func (s *DeviceService) GetDevices(ctx context.Context) ([]device_entity.Device,
 }
 
 func (s *DeviceService) GetDevice(ctx context.Context, deviceID string) (device_entity.Device, error) {
-	device, err := s.devicesRepository.Get(ctx, deviceID)
+	device, err := s.DeviceRepository.Get(ctx, deviceID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return device_entity.Device{}, device_entity.ErrDeviceNotFound
@@ -58,7 +57,7 @@ func (s *DeviceService) GetDevice(ctx context.Context, deviceID string) (device_
 }
 
 func (s *DeviceService) UpdateDevice(ctx context.Context, deviceID string, payload UpdateDeviceDTO) error {
-	device, err := s.devicesRepository.Get(ctx, deviceID)
+	device, err := s.DeviceRepository.Get(ctx, deviceID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +69,7 @@ func (s *DeviceService) UpdateDevice(ctx context.Context, deviceID string, paylo
 		return err
 	}
 
-	err = s.devicesRepository.Update(ctx, device)
+	err = s.DeviceRepository.Update(ctx, device)
 	if err != nil {
 		return err
 	}
@@ -79,7 +78,7 @@ func (s *DeviceService) UpdateDevice(ctx context.Context, deviceID string, paylo
 }
 
 func (s *DeviceService) DeleteDevice(ctx context.Context, deviceID string) error {
-	err := s.devicesRepository.Delete(ctx, deviceID)
+	err := s.DeviceRepository.Delete(ctx, deviceID)
 	if err != nil {
 		return err
 	}
@@ -88,7 +87,7 @@ func (s *DeviceService) DeleteDevice(ctx context.Context, deviceID string) error
 }
 
 func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrChan <-chan string, err error) {
-	device, err := s.devicesRepository.Get(ctx, deviceID)
+	device, err := s.DeviceRepository.Get(ctx, deviceID)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +96,7 @@ func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrC
 		ok, err := s.whatsappService.CheckDevice(ctx, *device.JID)
 		if err == nil && ok {
 			device.IsActive = true
-			err = s.devicesRepository.Update(ctx, device)
+			err = s.DeviceRepository.Update(ctx, device)
 			if err != nil {
 				return nil, err
 			}
@@ -114,9 +113,8 @@ func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrC
 	go func() {
 		for jid := range jidChan {
 			if jid != "" {
-				err = s.devicesRepository.UpdateJID(context.Background(), deviceID, &jid)
+				err = s.DeviceRepository.UpdateJID(context.Background(), deviceID, &jid)
 				if err != nil {
-					fmt.Println("error updating jid", err)
 					continue
 				}
 			}
