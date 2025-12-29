@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	device_repository "github.com/LeonardoSola/wagon-api/adapters/database/postgres/repositories/devices"
+	device_repository "github.com/LeonardoSola/wagon-api/adapters/database/postgres/repositories/device"
 	"github.com/LeonardoSola/wagon-api/internal/ports"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
