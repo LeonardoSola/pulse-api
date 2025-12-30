@@ -9,7 +9,6 @@ type configStruct struct {
 	Env      string
 	Server   serverConfigStruct
 	Database databaseConfigStruct
-	JWT      jwtConfigStruct
 }
 
 var Config *configStruct
@@ -30,16 +29,10 @@ func Load() error {
 		return fmt.Errorf("failed to load server environment: %w", err)
 	}
 
-	jwt, err := LoadJWTEnvironment()
-	if err != nil {
-		return fmt.Errorf("failed to load jwt environment: %w", err)
-	}
-
 	Config = &configStruct{
 		Env:      env,
 		Server:   server,
 		Database: database,
-		JWT:      jwt,
 	}
 
 	return nil

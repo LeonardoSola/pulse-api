@@ -48,19 +48,14 @@ func (r *MessageRepository) GetAll(ctx context.Context) ([]message_entity.Messag
 }
 
 func (r *MessageRepository) Get(ctx context.Context, messageID string) (message_entity.Message, error) {
-	dml := `SELECT * FROM messages WHERE id = $1`
+	dml := `SELECT * FROM messages WHERE id = $1 LIMIT 1`
 
 	rows, err := r.db.Query(ctx, dml, messageID)
 	if err != nil {
 		return message_entity.Message{}, err
 	}
 
-	message, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[message_entity.Message])
-	if err != nil {
-		return message_entity.Message{}, err
-	}
-
-	return message, nil
+	return pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[message_entity.Message])
 }
 
 func (r *MessageRepository) Delete(ctx context.Context, messageID string) error {
