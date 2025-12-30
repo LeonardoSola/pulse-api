@@ -40,6 +40,12 @@ func main() {
 	}
 	logger.Log.Info("✅ WhatsApp")
 
+	current, err := postgres.InitMigrations()
+	if err != nil {
+		panic("❌ Migrations: " + err.Error())
+	}
+	logger.Log.Info("✅ Migrations", "current", current)
+
 	bootstrap.Init()
 
 	router := http.Init()

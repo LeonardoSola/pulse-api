@@ -2,7 +2,7 @@
 
 # Run the application in development mode
 run:
-	set -a && source .env && set +a && air .
+	bash -c 'set -a && source .env && set +a && air .'
 
 # Show available commands
 help:

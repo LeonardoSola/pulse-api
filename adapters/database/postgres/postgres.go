@@ -24,11 +24,7 @@ func NewConnection() error {
 		return fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	err = runMigrations(pool)
-	if err != nil {
-		return err
-	}
-
+	conn = pool
 	DB = newDB(pool)
 
 	return nil

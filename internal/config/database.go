@@ -7,7 +7,6 @@ import (
 
 type databaseConfigStruct struct {
 	ConnectionString string
-	Driver           string
 }
 
 func LoadDatabaseEnvironment() (databaseConfigStruct, error) {
@@ -18,7 +17,7 @@ func LoadDatabaseEnvironment() (databaseConfigStruct, error) {
 			os.Getenv("DB_HOST"),
 			os.Getenv("DB_PORT"),
 			os.Getenv("DB_USER"),
-			os.Getenv("DB_PASSWORD"),
+			os.Getenv("DB_PASS"),
 			os.Getenv("DB_NAME"),
 			os.Getenv("DB_SSL_MODE"),
 		)
@@ -26,6 +25,5 @@ func LoadDatabaseEnvironment() (databaseConfigStruct, error) {
 
 	return databaseConfigStruct{
 		ConnectionString: connStr,
-		Driver:           os.Getenv("DB_DRIVER"),
 	}, nil
 }
