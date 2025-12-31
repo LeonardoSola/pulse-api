@@ -5,6 +5,7 @@ import (
 
 	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
 	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
+	"github.com/LeonardoSola/wagon-api/internal/logger"
 	"github.com/LeonardoSola/wagon-api/internal/ports"
 )
 
@@ -32,23 +33,24 @@ func (s *MessageService) CreateMessage(ctx context.Context, message message_enti
 		return device_entity.ErrDeviceNotLoggedIn
 	}
 
-	message.DeviceID = *device.JID
+	message.DeviceJID = *device.JID
 
 	if err = message.Validate(); err != nil {
 		return err
 	}
-
-	// err := s.messageRepository.Create(ctx, message)
-	// if err != nil {
-	// 	return err
-	// }
 
 	messageID, err := s.whatsappService.SendTextMessage(ctx, message)
 	if err != nil {
 		return err
 	}
 
-	message.ID = messageID
+	message.ExternalID = messageID
 
-	return s.messageRepository.Create(ctx, message)
+	err = s.messageRepository.Create(ctx, message)
+	if err != nil {
+		logger.Log.Error("MessageService.CreateMessage", "error", err)
+		return err
+	}
+
+	return nil
 }

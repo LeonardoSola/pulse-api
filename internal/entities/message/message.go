@@ -1,6 +1,7 @@
 package message_entity
 
 import (
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,6 +11,7 @@ type Message struct {
 	ID            string        `json:"id" db:"id"`
 	ExternalID    string        `json:"external_id" db:"external_id"`
 	DeviceID      string        `json:"device_id" db:"device_id"`
+	DeviceJID     string        `json:"-" db:"-"`
 	Text          string        `json:"text" db:"text"`
 	From          string        `json:"from" db:"from"`
 	Recipient     string        `json:"recipient" db:"recipient"`
@@ -47,6 +49,28 @@ func (m Message) GetRecipient() string {
 	}
 
 	return m.Recipient + "@s.whatsapp.net"
+}
+
+func (m *Message) SetRecipient(recipient string) error {
+	recipentSplit := strings.Split(recipient, "@")
+	if len(recipentSplit) != 2 {
+		return ErrInvalidRecipientType
+	}
+
+	if len(recipentSplit) == 1 {
+		m.Recipient = recipentSplit[0]
+		m.RecipientType = RecipientTypeUser
+	}
+
+	if recipentSplit[1] == "g.us" {
+		m.RecipientType = RecipientTypeGroup
+	} else {
+		m.RecipientType = RecipientTypeUser
+	}
+
+	m.Recipient = recipentSplit[0]
+
+	return nil
 }
 
 type RecipientType string

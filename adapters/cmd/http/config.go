@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	adapters_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/adapters"
 	app_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/app"
 	device_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/devices"
 	message_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/messages"
@@ -23,6 +24,7 @@ func Init() *chi.Mux {
 	app_handler.InitApp(r)
 	device_handler.InitDevices(r)
 	message_handler.InitMessages(r)
+	adapters_handler.InitAdapters(r)
 
 	return r
 }

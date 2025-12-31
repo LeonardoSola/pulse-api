@@ -4,6 +4,7 @@ import (
 	"context"
 
 	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
+	"github.com/LeonardoSola/wagon-api/internal/logger"
 	"github.com/LeonardoSola/wagon-api/internal/ports"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,7 +19,16 @@ func NewMessageRepository(db *pgxpool.Pool) ports.MessageRepository {
 }
 
 func (r *MessageRepository) Create(ctx context.Context, message message_entity.Message) error {
-	dml := `INSERT INTO messages (id, external_id, device_id, text, recipient, recipient_type, created_at) VALUES (:id, :external_id, :device_id, :text, :recipient, :recipient_type, :created_at)`
+	dml := `INSERT INTO messages (id, external_id, device_id, text, recipient, recipient_type, created_at) VALUES (@id, @external_id, @device_id, @text, @recipient, @recipient_type, @created_at)`
+
+	logger.Log.Debug("MessageRepository.Create", "message.ID", message.ID)
+	logger.Log.Debug("MessageRepository.Create", "message.ExternalID", message.ExternalID)
+	logger.Log.Debug("MessageRepository.Create", "message.DeviceID", message.DeviceID)
+	logger.Log.Debug("MessageRepository.Create", "message.DeviceJID", message.DeviceJID)
+	logger.Log.Debug("MessageRepository.Create", "message.Text", message.Text)
+	logger.Log.Debug("MessageRepository.Create", "message.Recipient", message.Recipient)
+	logger.Log.Debug("MessageRepository.Create", "message.RecipientType", message.RecipientType)
+	logger.Log.Debug("MessageRepository.Create", "message.CreatedAt", message.CreatedAt)
 
 	_, err := r.db.Exec(ctx, dml, pgx.NamedArgs{
 		"id":             message.ID,

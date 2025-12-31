@@ -9,7 +9,7 @@ import (
 )
 
 func (s *WhatsappService) SendTextMessage(ctx context.Context, message message_entity.Message) (messageID string, err error) {
-	client, err := s.getClient(ctx, message.DeviceID)
+	client, err := s.getClient(ctx, message.DeviceJID)
 	if err != nil {
 		return "", err
 	}
