@@ -6,4 +6,5 @@ type CreateMessageTextDTO struct {
 	Recipient     string                       `json:"recipient"`
 	RecipientType message_entity.RecipientType `json:"recipient_type"`
 	Text          string                       `json:"text"`
+	ImageURL      string                       `json:"image_url"`
 }

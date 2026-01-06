@@ -39,7 +39,12 @@ func (s *MessageService) CreateMessage(ctx context.Context, message message_enti
 		return err
 	}
 
-	messageID, err := s.whatsappService.SendTextMessage(ctx, message)
+	var messageID string
+	if message.ImageURL != "" {
+		messageID, err = s.whatsappService.SendImageMessage(ctx, message)
+	} else {
+		messageID, err = s.whatsappService.SendTextMessage(ctx, message)
+	}
 	if err != nil {
 		return err
 	}

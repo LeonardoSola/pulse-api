@@ -13,6 +13,7 @@ type Message struct {
 	DeviceID      string        `json:"device_id" db:"device_id"`
 	DeviceJID     string        `json:"-" db:"-"`
 	Text          string        `json:"text" db:"text"`
+	ImageURL      string        `json:"image_url" db:"image_url"`
 	From          string        `json:"from" db:"from"`
 	Recipient     string        `json:"recipient" db:"recipient"`
 	RecipientType RecipientType `json:"recipient_type" db:"recipient_type"`
@@ -22,6 +23,10 @@ type Message struct {
 }
 
 func NewMessage(deviceID string, text string, recipient string, recipientType RecipientType) Message {
+	return NewMessageWithImage(deviceID, text, recipient, recipientType, "")
+}
+
+func NewMessageWithImage(deviceID string, text string, recipient string, recipientType RecipientType, imageURL string) Message {
 	if recipientType == "" {
 		recipientType = RecipientTypeUser
 	}
@@ -30,6 +35,7 @@ func NewMessage(deviceID string, text string, recipient string, recipientType Re
 		ID:            uuid.New().String(),
 		DeviceID:      deviceID,
 		Text:          text,
+		ImageURL:      imageURL,
 		Recipient:     recipient,
 		RecipientType: recipientType,
 	}

@@ -18,13 +18,14 @@ func NewMessageRepository(db *pgxpool.Pool) ports.MessageRepository {
 }
 
 func (r *MessageRepository) Create(ctx context.Context, message message_entity.Message) error {
-	dml := `INSERT INTO messages (id, external_id, device_id, text, recipient, recipient_type, created_at) VALUES (@id, @external_id, @device_id, @text, @recipient, @recipient_type, @created_at)`
+	dml := `INSERT INTO messages (id, external_id, device_id, text, image_url, recipient, recipient_type, created_at) VALUES (@id, @external_id, @device_id, @text, @image_url, @recipient, @recipient_type, @created_at)`
 
 	_, err := r.db.Exec(ctx, dml, pgx.NamedArgs{
 		"id":             message.ID,
 		"external_id":    message.ExternalID,
 		"device_id":      message.DeviceID,
 		"text":           message.Text,
+		"image_url":      message.ImageURL,
 		"recipient":      message.Recipient,
 		"recipient_type": message.RecipientType,
 		"created_at":     message.CreatedAt,

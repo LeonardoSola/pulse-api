@@ -11,4 +11,5 @@ type WhatsappService interface {
 	DeleteDevice(ctx context.Context, deviceID string) error
 	CheckDevice(ctx context.Context, deviceID string) (bool, error)
 	SendTextMessage(ctx context.Context, message message_entity.Message) (messageID string, err error)
+	SendImageMessage(ctx context.Context, message message_entity.Message) (messageID string, err error)
 }
