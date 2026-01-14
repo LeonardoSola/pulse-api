@@ -10,11 +10,11 @@ import (
 )
 
 func InitDevices(router *chi.Mux) {
-	router.Get("/devices", getDevices)           // placeholder for now
-	router.Get("/devices/{id}", getDevice)       // placeholder for now
-	router.Post("/devices", createDevice)        // placeholder for now
-	router.Put("/devices/{id}", updateDevice)    // placeholder for now
-	router.Delete("/devices/{id}", deleteDevice) // placeholder for now
+	router.Get("/devices", getDevices)
+	router.Get("/devices/{id}", getDevice)
+	router.Post("/devices", createDevice)
+	router.Put("/devices/{id}", updateDevice)
+	router.Delete("/devices/{id}", deleteDevice)
 
 	router.Get("/devices/{id}/qr", getDeviceQR)
 }

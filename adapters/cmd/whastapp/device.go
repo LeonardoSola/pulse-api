@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp/events"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/types"
@@ -18,7 +17,6 @@ func (s *WhatsappService) CreateDevice(ctx context.Context) (qrChan <-chan strin
 	}
 
 	client := whatsmeow.NewClient(device, waLog.Stdout("Client", "ERROR", true))
-	client.AddEventHandler(events.EventHandler)
 
 	qrChan, jidChan, err = s.getQrCodeChannel(ctx, client)
 	if err != nil {

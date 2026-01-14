@@ -11,7 +11,6 @@ import (
 
 var Log *slog.Logger
 
-// Init inicializa o logger global da aplicação
 func Init() error {
 	var handler slog.Handler
 
@@ -32,10 +31,8 @@ func Init() error {
 
 	Log = slog.New(handler)
 
-	// Define como logger global do slog
 	slog.SetDefault(Log)
 
-	// Redireciona log.Printf (goose, libs antigas) para o mesmo output
 	log.SetOutput(os.Stdout)
 	log.SetFlags(0)
 

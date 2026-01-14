@@ -1,22 +1,39 @@
 package events
 
 import (
+	"context"
+
 	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
 	"github.com/LeonardoSola/wagon-api/internal/logger"
+	"github.com/LeonardoSola/wagon-api/internal/ports"
 	"go.mau.fi/whatsmeow/types/events"
 )
 
-func MessageHandler(evt *events.Message) {
-	message := message_entity.Message{
-		Text:      evt.Message.GetConversation(),
-		From:      evt.Info.Sender.ToNonAD().String(),
-		Recipient: evt.Info.Chat.String(),
+var messageService ports.MessageService
+
+// SetMessageService sets the message service for event handlers
+func SetMessageService(service ports.MessageService) {
+	messageService = service
+}
+
+func MessageHandler(deviceJID string, evt *events.Message) {
+	if messageService == nil {
+		logger.Log.Warn("MessageHandler: message service not initialized")
+		return
 	}
 
-	logger.Log.Debug("MessageHandler", "from", message.From, "recipient", message.Recipient, "text", message.Text)
+	message := message_entity.NewMessage(
+		"",
+		evt.Message.GetConversation(),
+		evt.Info.Chat.String(),
+		message_entity.RecipientTypeUser,
+		evt.Info.Sender.ToNonAD().String(),
+	)
+	message.DeviceJID = deviceJID
 
-	// platform := whastapp.NewWhatsappPlatform()
-	// platform.SetEvent(*evt)
-
-	// handlers.MessageHandler(platform, message)
+	err := messageService.ReceiveMessage(context.Background(), message)
+	if err != nil {
+		logger.Log.Error("MessageHandler", "error", err)
+		return
+	}
 }

@@ -13,6 +13,6 @@ func NewDummyMessaging() ports.MessagingService {
 	return &dummyMessaging{}
 }
 
-func (d *dummyMessaging) Publish(ctx context.Context, queue string, message []byte) error {
+func (d *dummyMessaging) Publish(ctx context.Context, queue string, message any) error {
 	return nil
 }

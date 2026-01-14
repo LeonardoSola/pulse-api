@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp/events"
 	database "github.com/LeonardoSola/wagon-api/adapters/database/postgres"
 	dummy_messaging "github.com/LeonardoSola/wagon-api/adapters/messaging/dummy"
 	"github.com/LeonardoSola/wagon-api/adapters/messaging/rabbitmq"
@@ -33,4 +34,7 @@ func Init() {
 		DeviceService:  device_service.NewDeviceService(db.DeviceRepository, whats),
 		MessageService: message_service.NewMessageService(db.MessageRepository, db.DeviceRepository, whats, messaging),
 	}
+
+	// Set message service for event handlers (breaks import cycle)
+	events.SetMessageService(Services.MessageService)
 }

@@ -9,6 +9,7 @@ import (
 type DeviceRepository interface {
 	GetAll(ctx context.Context) ([]device_entity.Device, error)
 	Get(ctx context.Context, deviceID string) (device_entity.Device, error)
+	GetByJID(ctx context.Context, jid string) (device_entity.Device, error)
 	Create(ctx context.Context, device device_entity.Device) error
 	Update(ctx context.Context, device device_entity.Device) error
 	Delete(ctx context.Context, deviceID string) error

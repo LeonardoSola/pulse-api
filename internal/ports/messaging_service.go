@@ -5,5 +5,5 @@ import (
 )
 
 type MessagingService interface {
-	Publish(ctx context.Context, queue string, message []byte) error
+	Publish(ctx context.Context, queue string, message any) error
 }

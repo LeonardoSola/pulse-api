@@ -123,3 +123,23 @@ func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrC
 
 	return qrChan, nil
 }
+
+func (s *DeviceService) StartDevices(ctx context.Context) error {
+	devices, err := s.DeviceRepository.GetAll(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, device := range devices {
+		if device.JID == nil || *device.JID == "" {
+			continue
+		}
+
+		err = s.whatsappService.ConnectDevice(ctx, *device.JID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

@@ -2,10 +2,10 @@ package rabbitmq
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
-	"github.com/LeonardoSola/wagon-api/internal/logger"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -21,18 +21,20 @@ func newMessaging(ch *amqp.Channel, exchange string) *messagingAdapter {
 	}
 }
 
-// Publish publishes a message to a queue
-func (m *messagingAdapter) Publish(ctx context.Context, queue string, message []byte) error {
+func (m *messagingAdapter) Publish(ctx context.Context, queue string, message any) error {
 	if m.channel == nil {
 		return fmt.Errorf("channel is not initialized")
 	}
 
-	// Create context with timeout
 	publishCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	// Publish message
-	err := m.channel.PublishWithContext(
+	messageJSON, err := json.Marshal(message)
+	if err != nil {
+		return fmt.Errorf("failed to marshal message: %w", err)
+	}
+
+	err = m.channel.PublishWithContext(
 		publishCtx,
 		m.exchange, // exchange
 		queue,      // routing key
@@ -40,7 +42,7 @@ func (m *messagingAdapter) Publish(ctx context.Context, queue string, message []
 		false,      // immediate
 		amqp.Publishing{
 			ContentType:  "application/json",
-			Body:         message,
+			Body:         messageJSON,
 			DeliveryMode: amqp.Persistent, // Make message persistent
 			Timestamp:    time.Now(),
 		},
@@ -49,6 +51,5 @@ func (m *messagingAdapter) Publish(ctx context.Context, queue string, message []
 		return fmt.Errorf("failed to publish message: %w", err)
 	}
 
-	logger.Log.Debug("Message published", "queue", queue, "size", len(message))
 	return nil
 }

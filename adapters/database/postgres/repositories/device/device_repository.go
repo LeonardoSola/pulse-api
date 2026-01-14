@@ -48,12 +48,18 @@ func (r *DeviceRepository) Get(ctx context.Context, deviceID string) (device_ent
 		return device_entity.Device{}, err
 	}
 
-	dev, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
+	return pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
+}
+
+func (r *DeviceRepository) GetByJID(ctx context.Context, jid string) (device_entity.Device, error) {
+	dml := `SELECT * FROM devices WHERE jid = $1`
+
+	rows, err := r.db.Query(ctx, dml, jid)
 	if err != nil {
 		return device_entity.Device{}, err
 	}
 
-	return dev, nil
+	return pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
 }
 
 func (r *DeviceRepository) Update(ctx context.Context, device device_entity.Device) error {

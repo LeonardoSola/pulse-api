@@ -11,7 +11,6 @@ var (
 	Messaging *messagingAdapter
 )
 
-// NewConnection establishes a new connection to RabbitMQ
 func InitRabbitMQ() error {
 	if !config.Config.RabbitMQ.Enabled {
 		return nil
@@ -33,7 +32,6 @@ func InitRabbitMQ() error {
 	return nil
 }
 
-// Close closes the RabbitMQ connection
 func Close() {
 	if Messaging.channel != nil {
 		Messaging.channel.Close()

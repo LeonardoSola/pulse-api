@@ -22,8 +22,15 @@ type Message struct {
 	DeletedAt     *time.Time    `json:"deleted_at" db:"deleted_at"`
 }
 
-func NewMessage(deviceID string, text string, recipient string, recipientType RecipientType) Message {
-	return NewMessageWithImage(deviceID, text, recipient, recipientType, "")
+func NewMessage(deviceID string, text string, recipient string, recipientType RecipientType, from string) Message {
+	return Message{
+		ID:            uuid.New().String(),
+		DeviceID:      deviceID,
+		Text:          text,
+		From:          from,
+		Recipient:     recipient,
+		RecipientType: recipientType,
+	}
 }
 
 func NewMessageWithImage(deviceID string, text string, recipient string, recipientType RecipientType, imageURL string) Message {

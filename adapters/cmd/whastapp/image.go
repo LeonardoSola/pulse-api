@@ -29,19 +29,16 @@ func (s *WhatsappService) SendImageMessage(ctx context.Context, message message_
 		return "", err
 	}
 
-	// Download the image from URL
 	imageData, mimeType, err := downloadImage(ctx, message.ImageURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to download image: %w", err)
 	}
 
-	// Upload image to WhatsApp
 	uploadResp, err := client.Upload(ctx, imageData, whatsmeow.MediaImage)
 	if err != nil {
 		return "", fmt.Errorf("failed to upload image: %w", err)
 	}
 
-	// Create image message
 	imageMsg := &waE2E.ImageMessage{
 		Caption:       proto.String(message.Text),
 		Mimetype:      proto.String(mimeType),
@@ -53,7 +50,6 @@ func (s *WhatsappService) SendImageMessage(ctx context.Context, message message_
 		FileLength:    &uploadResp.FileLength,
 	}
 
-	// Send the message
 	sentMessage, err := client.SendMessage(
 		ctx, recipient, &waE2E.Message{
 			ImageMessage: imageMsg,
@@ -87,13 +83,11 @@ func downloadImage(ctx context.Context, url string) ([]byte, string, error) {
 		return nil, "", err
 	}
 
-	// Get MIME type from Content-Type header or infer from URL
 	mimeType := resp.Header.Get("Content-Type")
 	if mimeType == "" {
 		mimeType = inferMimeTypeFromURL(url)
 	}
 
-	// Default to image/jpeg if still unknown
 	if mimeType == "" {
 		mimeType = "image/jpeg"
 	}

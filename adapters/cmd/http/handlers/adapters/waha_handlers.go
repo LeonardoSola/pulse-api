@@ -29,7 +29,7 @@ func sendText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	message := message_entity.NewMessage(payload.DeviceID, payload.Text, payload.Recipient, message_entity.RecipientTypeUser)
+	message := message_entity.NewMessage(payload.DeviceID, payload.Text, payload.Recipient, message_entity.RecipientTypeUser, "")
 	if err != nil {
 		utils.ErrorResponse(err, w)
 		return

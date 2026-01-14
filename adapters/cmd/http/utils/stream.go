@@ -10,7 +10,6 @@ func StreamSSE(
 	r *http.Request,
 	messages <-chan string,
 ) {
-	// Headers SSE
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -29,7 +28,6 @@ func StreamSSE(
 
 		case msg, ok := <-messages:
 			if !ok {
-				// canal fechado → encerra stream
 				return
 			}
 

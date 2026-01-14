@@ -21,10 +21,9 @@ type rabbitmqConfigStruct struct {
 func LoadRabbitMQEnvironment() (rabbitmqConfigStruct, error) {
 	rabbitmqEnable := os.Getenv("RABBITMQ_ENABLED")
 	rabbitmqEnable = strings.ToLower(rabbitmqEnable)
-	if rabbitmqEnable != "true" {
-		return rabbitmqConfigStruct{
-			Enabled: false,
-		}, nil
+	enabled := false
+	if rabbitmqEnable == "true" {
+		enabled = true
 	}
 
 	url := os.Getenv("RABBITMQ_URL")
@@ -65,5 +64,6 @@ func LoadRabbitMQEnvironment() (rabbitmqConfigStruct, error) {
 	return rabbitmqConfigStruct{
 		URL:      url,
 		Exchange: exchange,
+		Enabled:  enabled,
 	}, nil
 }

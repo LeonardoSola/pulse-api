@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
@@ -49,12 +50,18 @@ func main() {
 
 	err = rabbitmq.InitRabbitMQ()
 	if err != nil {
-		panic("❌ RabbitMQ: " + err.Error())
+		panic("❌ Messaging: " + err.Error())
 	}
-	logger.Log.Info("✅ RabbitMQ")
+	logger.Log.Info("✅ Messaging")
 	defer rabbitmq.Close()
 
 	bootstrap.Init()
+
+	err = bootstrap.Services.DeviceService.StartDevices(context.Background())
+	if err != nil {
+		panic("❌ Devices: " + err.Error())
+	}
+	logger.Log.Info("✅ Devices")
 
 	router := http.Init()
 
