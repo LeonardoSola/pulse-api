@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/pressly/goose/v3 v3.26.0
+	github.com/rabbitmq/amqp091-go v1.10.0
 	go.mau.fi/whatsmeow v0.0.0-20251217143725-11cf47c62d32
 	google.golang.org/protobuf v1.36.11
 )

@@ -3,6 +3,10 @@ package bootstrap
 import (
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
 	database "github.com/LeonardoSola/wagon-api/adapters/database/postgres"
+	dummy_messaging "github.com/LeonardoSola/wagon-api/adapters/messaging/dummy"
+	"github.com/LeonardoSola/wagon-api/adapters/messaging/rabbitmq"
+	"github.com/LeonardoSola/wagon-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/ports"
 	auth_service "github.com/LeonardoSola/wagon-api/internal/services/auth"
 	device_service "github.com/LeonardoSola/wagon-api/internal/services/device"
 	message_service "github.com/LeonardoSola/wagon-api/internal/services/message"
@@ -19,10 +23,14 @@ var Services *services
 func Init() {
 	db := database.DB
 	whats := whastapp.NewWhatsappService()
+	var messaging ports.MessagingService = rabbitmq.Messaging
+	if !config.Config.RabbitMQ.Enabled {
+		messaging = dummy_messaging.NewDummyMessaging()
+	}
 
 	Services = &services{
 		AuthService:    auth_service.NewJWTService(),
 		DeviceService:  device_service.NewDeviceService(db.DeviceRepository, whats),
-		MessageService: message_service.NewMessageService(db.MessageRepository, db.DeviceRepository, whats),
+		MessageService: message_service.NewMessageService(db.MessageRepository, db.DeviceRepository, whats, messaging),
 	}
 }

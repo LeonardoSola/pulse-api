@@ -7,6 +7,7 @@ import (
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/http"
 	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
 	"github.com/LeonardoSola/wagon-api/adapters/database/postgres"
+	"github.com/LeonardoSola/wagon-api/adapters/messaging/rabbitmq"
 	"github.com/LeonardoSola/wagon-api/internal/config"
 	"github.com/LeonardoSola/wagon-api/internal/logger"
 
@@ -45,6 +46,13 @@ func main() {
 		panic("❌ Migrations: " + err.Error())
 	}
 	logger.Log.Info("✅ Migrations", "current", current)
+
+	err = rabbitmq.InitRabbitMQ()
+	if err != nil {
+		panic("❌ RabbitMQ: " + err.Error())
+	}
+	logger.Log.Info("✅ RabbitMQ")
+	defer rabbitmq.Close()
 
 	bootstrap.Init()
 

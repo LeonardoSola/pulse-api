@@ -13,13 +13,15 @@ type MessageService struct {
 	messageRepository ports.MessageRepository
 	deviceService     ports.DeviceRepository
 	whatsappService   ports.WhatsappService
+	messagingService  ports.MessagingService
 }
 
-func NewMessageService(messageRepository ports.MessageRepository, deviceService ports.DeviceRepository, whatsappService ports.WhatsappService) *MessageService {
+func NewMessageService(messageRepository ports.MessageRepository, deviceService ports.DeviceRepository, whatsappService ports.WhatsappService, messagingService ports.MessagingService) *MessageService {
 	return &MessageService{
 		messageRepository,
 		deviceService,
 		whatsappService,
+		messagingService,
 	}
 }
 
