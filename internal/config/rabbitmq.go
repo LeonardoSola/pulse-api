@@ -58,7 +58,7 @@ func LoadRabbitMQEnvironment() (rabbitmqConfigStruct, error) {
 
 	exchange := os.Getenv("RABBITMQ_EXCHANGE")
 	if exchange == "" {
-		exchange = "wagon-api"
+		exchange = "pulse-api"
 	}
 
 	return rabbitmqConfigStruct{

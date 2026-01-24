@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
-	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/utils"
-	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
+	"github.com/LeonardoSola/pulse-api/adapters/bootstrap"
+	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/utils"
+	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
 	"github.com/go-chi/chi/v5"
 )
 

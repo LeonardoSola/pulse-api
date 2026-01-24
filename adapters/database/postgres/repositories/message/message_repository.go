@@ -3,8 +3,8 @@ package message_repository
 import (
 	"context"
 
-	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
-	"github.com/LeonardoSola/wagon-api/internal/ports"
+	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
+	"github.com/LeonardoSola/pulse-api/internal/ports"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )

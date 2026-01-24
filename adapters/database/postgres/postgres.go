@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/LeonardoSola/wagon-api/internal/config"
+	"github.com/LeonardoSola/pulse-api/internal/config"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

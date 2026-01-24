@@ -1,11 +1,11 @@
 package http
 
 import (
-	adapters_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/adapters"
-	app_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/app"
-	device_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/devices"
-	message_handler "github.com/LeonardoSola/wagon-api/adapters/cmd/http/handlers/messages"
-	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/middleware"
+	adapters_handler "github.com/LeonardoSola/pulse-api/adapters/cmd/http/handlers/adapters"
+	app_handler "github.com/LeonardoSola/pulse-api/adapters/cmd/http/handlers/app"
+	device_handler "github.com/LeonardoSola/pulse-api/adapters/cmd/http/handlers/devices"
+	message_handler "github.com/LeonardoSola/pulse-api/adapters/cmd/http/handlers/messages"
+	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/middleware"
 	"github.com/go-chi/chi/v5"
 )
 

@@ -3,11 +3,11 @@ package device_repository
 import (
 	"context"
 
-	"github.com/LeonardoSola/wagon-api/internal/ports"
+	"github.com/LeonardoSola/pulse-api/internal/ports"
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
+	device_entity "github.com/LeonardoSola/pulse-api/internal/entities/device"
 )
 
 type DeviceRepository struct {

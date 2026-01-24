@@ -1,7 +1,7 @@
 services:
   api:
     build: .
-    container_name: wagon-api
+    container_name: pulse-api
     env_file:
       - .env
     ports:
@@ -10,11 +10,11 @@ services:
       - postgres
     restart: unless-stopped
     networks:
-      - wagon-api-net
+      - pulse-api-net
 
   postgres:
     image: postgres:16-alpine
-    container_name: wagon-api-postgres
+    container_name: pulse-api-postgres
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -25,10 +25,10 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
-      - wagon-api-net
+      - pulse-api-net
 
 volumes:
   postgres_data:
 networks:
-  wagon-api-net:
+  pulse-api-net:
     driver: bridge
