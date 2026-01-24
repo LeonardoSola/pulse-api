@@ -105,6 +105,17 @@ DB_SSL_MODE=disable
 # OR use connection string
 # DB_CONNECTION_STRING=postgres://user:password@localhost:5432/dbname
 
+# RabbitMQ
+RABBITMQ_ENABLED=false
+RABBITMQ_HOST=
+RABBITMQ_PORT=
+RABBITMQ_USER=
+RABBITMQ_PASSWORD=
+RABBITMQ_VHOST=
+RABBITMQ_EXCHANGE=
+# OR use connection string
+RABBITMQ_URL=amqp://user:password@host:port/
+
 # Server
 SERVER_PORT=8080
 API_KEY=your_api_key_here  # Generate with: openssl rand -hex 32
