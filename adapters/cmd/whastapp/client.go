@@ -3,7 +3,7 @@ package whastapp
 import (
 	"context"
 
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/whastapp/events"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp/events"
 	"go.mau.fi/whatsmeow"
 	waLog "go.mau.fi/whatsmeow/util/log"
 )

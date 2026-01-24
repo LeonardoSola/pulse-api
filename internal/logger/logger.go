@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/LeonardoSola/pulse-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/config"
 )
 
 var Log *slog.Logger

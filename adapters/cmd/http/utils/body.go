@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/LeonardoSola/pulse-api/internal/custom_error"
+	"github.com/LeonardoSola/wagon-api/internal/custom_error"
 )
 
 func DecodeBody(r *http.Request, v any) error {

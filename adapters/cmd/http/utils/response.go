@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/LeonardoSola/pulse-api/internal/config"
-	"github.com/LeonardoSola/pulse-api/internal/custom_error"
+	"github.com/LeonardoSola/wagon-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/custom_error"
 )
 
 type Success struct {

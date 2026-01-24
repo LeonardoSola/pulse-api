@@ -1,16 +1,16 @@
 package bootstrap
 
 import (
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/whastapp"
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/whastapp/events"
-	database "github.com/LeonardoSola/pulse-api/adapters/database/postgres"
-	dummy_messaging "github.com/LeonardoSola/pulse-api/adapters/messaging/dummy"
-	"github.com/LeonardoSola/pulse-api/adapters/messaging/rabbitmq"
-	"github.com/LeonardoSola/pulse-api/internal/config"
-	"github.com/LeonardoSola/pulse-api/internal/ports"
-	auth_service "github.com/LeonardoSola/pulse-api/internal/services/auth"
-	device_service "github.com/LeonardoSola/pulse-api/internal/services/device"
-	message_service "github.com/LeonardoSola/pulse-api/internal/services/message"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp/events"
+	database "github.com/LeonardoSola/wagon-api/adapters/database/postgres"
+	dummy_messaging "github.com/LeonardoSola/wagon-api/adapters/messaging/dummy"
+	"github.com/LeonardoSola/wagon-api/adapters/messaging/rabbitmq"
+	"github.com/LeonardoSola/wagon-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/ports"
+	auth_service "github.com/LeonardoSola/wagon-api/internal/services/auth"
+	device_service "github.com/LeonardoSola/wagon-api/internal/services/device"
+	message_service "github.com/LeonardoSola/wagon-api/internal/services/message"
 )
 
 type services struct {

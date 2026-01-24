@@ -3,7 +3,7 @@ package rabbitmq
 import (
 	"fmt"
 
-	"github.com/LeonardoSola/pulse-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/config"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 

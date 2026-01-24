@@ -3,9 +3,9 @@ package events
 import (
 	"context"
 
-	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
-	"github.com/LeonardoSola/pulse-api/internal/logger"
-	"github.com/LeonardoSola/pulse-api/internal/ports"
+	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
+	"github.com/LeonardoSola/wagon-api/internal/logger"
+	"github.com/LeonardoSola/wagon-api/internal/ports"
 	"go.mau.fi/whatsmeow/types/events"
 )
 

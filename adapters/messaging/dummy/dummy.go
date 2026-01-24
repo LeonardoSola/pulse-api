@@ -3,7 +3,7 @@ package dummy_messaging
 import (
 	"context"
 
-	"github.com/LeonardoSola/pulse-api/internal/ports"
+	"github.com/LeonardoSola/wagon-api/internal/ports"
 )
 
 type dummyMessaging struct {

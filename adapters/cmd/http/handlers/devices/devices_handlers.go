@@ -3,9 +3,9 @@ package device_handler
 import (
 	"net/http"
 
-	"github.com/LeonardoSola/pulse-api/adapters/bootstrap"
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/utils"
-	device_service "github.com/LeonardoSola/pulse-api/internal/services/device"
+	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/utils"
+	device_service "github.com/LeonardoSola/wagon-api/internal/services/device"
 	chi "github.com/go-chi/chi/v5"
 )
 

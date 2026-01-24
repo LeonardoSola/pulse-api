@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
+	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
 )
 
 type WhatsappService interface {

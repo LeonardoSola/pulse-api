@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/LeonardoSola/pulse-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/config"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	waLog "go.mau.fi/whatsmeow/util/log"

@@ -1,8 +1,8 @@
 package auth_service
 
 import (
-	"github.com/LeonardoSola/pulse-api/internal/config"
-	"github.com/LeonardoSola/pulse-api/internal/custom_error"
+	"github.com/LeonardoSola/wagon-api/internal/config"
+	"github.com/LeonardoSola/wagon-api/internal/custom_error"
 )
 
 type JWTService struct {

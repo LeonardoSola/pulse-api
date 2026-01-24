@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/utils"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/utils"
 	chi "github.com/go-chi/chi/v5"
 )
 

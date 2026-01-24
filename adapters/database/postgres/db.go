@@ -1,9 +1,9 @@
 package postgres
 
 import (
-	device_repository "github.com/LeonardoSola/pulse-api/adapters/database/postgres/repositories/device"
-	message_repository "github.com/LeonardoSola/pulse-api/adapters/database/postgres/repositories/message"
-	"github.com/LeonardoSola/pulse-api/internal/ports"
+	device_repository "github.com/LeonardoSola/wagon-api/adapters/database/postgres/repositories/device"
+	message_repository "github.com/LeonardoSola/wagon-api/adapters/database/postgres/repositories/message"
+	"github.com/LeonardoSola/wagon-api/internal/ports"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

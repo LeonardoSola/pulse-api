@@ -3,9 +3,9 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/LeonardoSola/pulse-api/adapters/bootstrap"
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/utils"
-	"github.com/LeonardoSola/pulse-api/internal/custom_error"
+	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
+	"github.com/LeonardoSola/wagon-api/adapters/cmd/http/utils"
+	"github.com/LeonardoSola/wagon-api/internal/custom_error"
 )
 
 func AuthAPIKey(next http.Handler) http.Handler {

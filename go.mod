@@ -1,4 +1,4 @@
-module github.com/LeonardoSola/pulse-api
+module github.com/LeonardoSola/wagon-api
 
 go 1.25.2
 
