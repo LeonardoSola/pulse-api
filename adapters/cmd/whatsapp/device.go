@@ -119,7 +119,7 @@ func (s *WhatsappService) getQrCodeChannel(ctx context.Context, client *whatsmeo
 					return
 				}
 			case whatsmeow.QRChannelSuccess.Event:
-				deviceJID := client.Store.GetJID().ADString()
+				deviceJID := client.Store.GetJID().String()
 				registerClient(deviceJID, client)
 				jidChan <- deviceJID
 				send("success")
