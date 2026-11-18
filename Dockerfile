@@ -1,4 +1,6 @@
-FROM golang:1.25.2-alpine AS builder
+# syntax=docker/dockerfile:1
+
+FROM golang:1.26-alpine AS builder
 
 WORKDIR /app
 
@@ -9,20 +11,25 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-	go build -o app
+# TARGETOS/TARGETARCH are set by BuildKit, so the image builds natively on
+# both amd64 and arm64 hosts.
+ARG TARGETOS=linux
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+	go build -trimpath -ldflags="-s -w" -o /out/pulse-api .
 
-FROM alpine:latest AS runtime
+FROM alpine:3.22 AS runtime
+
+RUN apk add --no-cache ca-certificates tzdata \
+	&& adduser -D -H -u 10001 pulse
 
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates
+# Migrations are embedded in the binary.
+COPY --from=builder /out/pulse-api /app/pulse-api
 
-COPY --from=builder /app/app .
-COPY --from=builder /app/migrations ./migrations
-
+USER pulse
 
 EXPOSE 8080
 
-CMD ["./app"]
-	
+ENTRYPOINT ["/app/pulse-api"]
