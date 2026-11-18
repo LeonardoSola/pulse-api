@@ -329,7 +329,7 @@ A device:
 ```json
 {
   "id": "ee24ca52-db49-439a-8b14-9e134b21d05f",
-  "jid": "5511999999999.0:12@s.whatsapp.net",
+  "jid": "5511999999999:12@s.whatsapp.net",
   "name": "Sales phone",
   "created_at": "2026-11-18T14:09:59.70783-03:00",
   "updated_at": "2026-11-18T14:12:31.10422-03:00",
