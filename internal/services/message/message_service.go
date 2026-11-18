@@ -30,6 +30,10 @@ func (s *MessageService) CreateMessage(ctx context.Context, message message_enti
 		return err
 	}
 
+	if err := message.Validate(); err != nil {
+		return err
+	}
+
 	device, err := s.deviceRepository.Get(ctx, message.DeviceID)
 	if err != nil {
 		return err
@@ -41,10 +45,6 @@ func (s *MessageService) CreateMessage(ctx context.Context, message message_enti
 
 	message.DeviceJID = *device.JID
 	message.From = *device.JID
-
-	if err = message.Validate(); err != nil {
-		return err
-	}
 
 	var messageID string
 	if message.ImageURL != "" {
