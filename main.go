@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/LeonardoSola/wagon-api/adapters/bootstrap"
-	"github.com/LeonardoSola/wagon-api/adapters/cmd/http"
-	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp"
-	"github.com/LeonardoSola/wagon-api/adapters/database/postgres"
-	"github.com/LeonardoSola/wagon-api/adapters/messaging/rabbitmq"
-	"github.com/LeonardoSola/wagon-api/internal/config"
-	"github.com/LeonardoSola/wagon-api/internal/logger"
+	"github.com/LeonardoSola/pulse-api/adapters/bootstrap"
+	"github.com/LeonardoSola/pulse-api/adapters/cmd/http"
+	"github.com/LeonardoSola/pulse-api/adapters/cmd/whatsapp"
+	"github.com/LeonardoSola/pulse-api/adapters/database/postgres"
+	"github.com/LeonardoSola/pulse-api/adapters/messaging/rabbitmq"
+	"github.com/LeonardoSola/pulse-api/internal/config"
+	"github.com/LeonardoSola/pulse-api/internal/logger"
 
 	stdhttp "net/http"
 )
@@ -36,7 +36,7 @@ func main() {
 	logger.Log.Info("✅ Database")
 	defer postgres.Close()
 
-	err = whastapp.InitContainer()
+	err = whatsapp.InitContainer()
 	if err != nil {
 		panic("❌ WhatsApp: " + err.Error())
 	}

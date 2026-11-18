@@ -1,9 +1,9 @@
-package whastapp
+package whatsapp
 
 import (
 	"context"
 
-	"github.com/LeonardoSola/wagon-api/adapters/cmd/whastapp/events"
+	"github.com/LeonardoSola/pulse-api/adapters/cmd/whatsapp/events"
 	"go.mau.fi/whatsmeow"
 	waLog "go.mau.fi/whatsmeow/util/log"
 )

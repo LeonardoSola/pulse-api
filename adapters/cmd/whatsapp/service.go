@@ -1,7 +1,7 @@
-package whastapp
+package whatsapp
 
 import (
-	"github.com/LeonardoSola/wagon-api/internal/ports"
+	"github.com/LeonardoSola/pulse-api/internal/ports"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 )
 

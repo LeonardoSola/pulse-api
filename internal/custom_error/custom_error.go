@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/LeonardoSola/wagon-api/internal/logger"
+	"github.com/LeonardoSola/pulse-api/internal/logger"
 )
 
 type ErrorLevel int8

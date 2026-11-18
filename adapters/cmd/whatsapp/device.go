@@ -1,4 +1,4 @@
-package whastapp
+package whatsapp
 
 import (
 	"context"

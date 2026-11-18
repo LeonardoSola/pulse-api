@@ -3,10 +3,10 @@ package message_service
 import (
 	"context"
 
-	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
-	message_entity "github.com/LeonardoSola/wagon-api/internal/entities/message"
-	"github.com/LeonardoSola/wagon-api/internal/logger"
-	"github.com/LeonardoSola/wagon-api/internal/ports"
+	device_entity "github.com/LeonardoSola/pulse-api/internal/entities/device"
+	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
+	"github.com/LeonardoSola/pulse-api/internal/logger"
+	"github.com/LeonardoSola/pulse-api/internal/ports"
 )
 
 type MessageService struct {

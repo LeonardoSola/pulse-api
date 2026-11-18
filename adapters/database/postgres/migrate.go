@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/LeonardoSola/wagon-api/internal/logger"
+	"github.com/LeonardoSola/pulse-api/internal/logger"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pressly/goose/v3"
 )

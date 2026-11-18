@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
-	"github.com/LeonardoSola/wagon-api/internal/ports"
+	device_entity "github.com/LeonardoSola/pulse-api/internal/entities/device"
+	"github.com/LeonardoSola/pulse-api/internal/ports"
 	"github.com/jackc/pgx/v5"
 )
 

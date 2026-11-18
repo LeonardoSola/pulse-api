@@ -3,7 +3,7 @@ package ports
 import (
 	"context"
 
-	device_entity "github.com/LeonardoSola/wagon-api/internal/entities/device"
+	device_entity "github.com/LeonardoSola/pulse-api/internal/entities/device"
 )
 
 type DeviceRepository interface {
