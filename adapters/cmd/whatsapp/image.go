@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
 	"go.mau.fi/whatsmeow"
@@ -31,7 +32,7 @@ func (s *WhatsappService) SendImageMessage(ctx context.Context, message message_
 
 	imageData, mimeType, err := downloadImage(ctx, message.ImageURL)
 	if err != nil {
-		return "", fmt.Errorf("failed to download image: %w", err)
+		return "", message_entity.ErrImageDownload.SetError(err)
 	}
 
 	uploadResp, err := client.Upload(ctx, imageData, whatsmeow.MediaImage)
@@ -62,13 +63,18 @@ func (s *WhatsappService) SendImageMessage(ctx context.Context, message message_
 	return sentMessage.ID, nil
 }
 
+// maxImageSize is WhatsApp's limit for image messages.
+const maxImageSize = 16 << 20 // 16 MiB
+
+var imageHTTPClient = &http.Client{Timeout: 30 * time.Second}
+
 func downloadImage(ctx context.Context, url string) ([]byte, string, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, "", err
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := imageHTTPClient.Do(req)
 	if err != nil {
 		return nil, "", err
 	}
@@ -78,25 +84,43 @@ func downloadImage(ctx context.Context, url string) ([]byte, string, error) {
 		return nil, "", fmt.Errorf("failed to download image: status code %d", resp.StatusCode)
 	}
 
-	imageData, err := io.ReadAll(resp.Body)
+	imageData, err := io.ReadAll(io.LimitReader(resp.Body, maxImageSize+1))
 	if err != nil {
 		return nil, "", err
 	}
 
-	mimeType := resp.Header.Get("Content-Type")
-	if mimeType == "" {
-		mimeType = inferMimeTypeFromURL(url)
+	if len(imageData) > maxImageSize {
+		return nil, "", fmt.Errorf("image is larger than %d bytes", maxImageSize)
 	}
 
-	if mimeType == "" {
-		mimeType = "image/jpeg"
+	mimeType, err := detectImageMimeType(resp.Header.Get("Content-Type"), url, imageData)
+	if err != nil {
+		return nil, "", err
 	}
 
 	return imageData, mimeType, nil
 }
 
+// detectImageMimeType picks the image MIME type from the response header,
+// the file contents or the URL extension, in that order.
+func detectImageMimeType(contentType string, url string, data []byte) (string, error) {
+	candidates := []string{contentType, http.DetectContentType(data), inferMimeTypeFromURL(url)}
+	for _, candidate := range candidates {
+		mimeType, _, _ := strings.Cut(candidate, ";")
+		mimeType = strings.TrimSpace(strings.ToLower(mimeType))
+		if strings.HasPrefix(mimeType, "image/") {
+			return mimeType, nil
+		}
+	}
+
+	return "", fmt.Errorf("URL does not point to an image (content type %q)", contentType)
+}
+
 func inferMimeTypeFromURL(url string) string {
 	urlLower := strings.ToLower(url)
+	if i := strings.IndexAny(urlLower, "?#"); i >= 0 {
+		urlLower = urlLower[:i]
+	}
 	switch {
 	case strings.HasSuffix(urlLower, ".jpg") || strings.HasSuffix(urlLower, ".jpeg"):
 		return "image/jpeg"

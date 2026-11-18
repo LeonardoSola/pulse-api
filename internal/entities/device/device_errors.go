@@ -22,10 +22,10 @@ var (
 		Level:   custom_error.LevelInfo,
 	}
 	ErrDeviceNotLoggedIn = custom_error.CustomError{
-		Status:  http.StatusInternalServerError,
+		Status:  http.StatusConflict,
 		Message: "Device not logged in",
-		Info:    "device not logged in",
-		Level:   custom_error.LevelError,
+		Info:    "device is not paired with WhatsApp yet, scan the QR code first",
+		Level:   custom_error.LevelInfo,
 	}
 
 	ErrDeviceInvalidName = custom_error.CustomError{

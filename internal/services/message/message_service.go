@@ -11,22 +11,26 @@ import (
 
 type MessageService struct {
 	messageRepository ports.MessageRepository
-	deviceService     ports.DeviceRepository
+	deviceRepository  ports.DeviceRepository
 	whatsappService   ports.WhatsappService
 	messagingService  ports.MessagingService
 }
 
-func NewMessageService(messageRepository ports.MessageRepository, deviceService ports.DeviceRepository, whatsappService ports.WhatsappService, messagingService ports.MessagingService) *MessageService {
+func NewMessageService(messageRepository ports.MessageRepository, deviceRepository ports.DeviceRepository, whatsappService ports.WhatsappService, messagingService ports.MessagingService) *MessageService {
 	return &MessageService{
 		messageRepository,
-		deviceService,
+		deviceRepository,
 		whatsappService,
 		messagingService,
 	}
 }
 
 func (s *MessageService) CreateMessage(ctx context.Context, message message_entity.Message) error {
-	device, err := s.deviceService.Get(ctx, message.DeviceID)
+	if err := device_entity.ValidateID(message.DeviceID); err != nil {
+		return err
+	}
+
+	device, err := s.deviceRepository.Get(ctx, message.DeviceID)
 	if err != nil {
 		return err
 	}
@@ -64,7 +68,7 @@ func (s *MessageService) CreateMessage(ctx context.Context, message message_enti
 }
 
 func (s *MessageService) ReceiveMessage(ctx context.Context, message message_entity.Message) error {
-	device, err := s.deviceService.GetByJID(ctx, message.DeviceJID)
+	device, err := s.deviceRepository.GetByJID(ctx, message.DeviceJID)
 	if err != nil {
 		logger.Log.Error("MessageService.ReceiveMessage", "error", err)
 		return err

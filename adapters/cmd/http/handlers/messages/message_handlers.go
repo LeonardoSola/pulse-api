@@ -1,8 +1,8 @@
 package message_handler
 
 import (
-	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/LeonardoSola/pulse-api/adapters/bootstrap"
 	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/utils"
@@ -16,26 +16,32 @@ func InitMessages(router chi.Router) {
 }
 
 func createTextMessage(w http.ResponseWriter, r *http.Request) {
-	deviceID := chi.URLParam(r, "deviceId")
+	sendMessage(w, r, false)
+}
 
+func createImageMessage(w http.ResponseWriter, r *http.Request) {
+	sendMessage(w, r, true)
+}
+
+func sendMessage(w http.ResponseWriter, r *http.Request, requireImage bool) {
 	var payload CreateMessageTextDTO
-	err := utils.DecodeBody(r, &payload)
+	if err := utils.DecodeBody(r, &payload); err != nil {
+		utils.ErrorResponse(err, w)
+		return
+	}
+
+	message, err := payload.toMessage(chi.URLParam(r, "deviceId"))
 	if err != nil {
 		utils.ErrorResponse(err, w)
 		return
 	}
 
-	err = bootstrap.Services.MessageService.CreateMessage(
-		r.Context(),
-		message_entity.NewMessageWithImage(
-			deviceID,
-			payload.Text,
-			payload.Recipient,
-			payload.RecipientType,
-			payload.ImageURL,
-		),
-	)
-	if err != nil {
+	if requireImage && message.ImageURL == "" {
+		utils.ErrorResponse(message_entity.ErrImageURLRequired, w)
+		return
+	}
+
+	if err := bootstrap.Services.MessageService.CreateMessage(r.Context(), message); err != nil {
 		utils.ErrorResponse(err, w)
 		return
 	}
@@ -43,35 +49,16 @@ func createTextMessage(w http.ResponseWriter, r *http.Request) {
 	utils.SendResponse("success", http.StatusCreated, w)
 }
 
-func createImageMessage(w http.ResponseWriter, r *http.Request) {
-	deviceID := chi.URLParam(r, "deviceId")
+// toMessage builds the outgoing message. The recipient may be a bare number /
+// group ID (with recipient_type) or a full JID such as "5511999999999@s.whatsapp.net".
+func (p CreateMessageTextDTO) toMessage(deviceID string) (message_entity.Message, error) {
+	message := message_entity.NewMessageWithImage(deviceID, p.Text, p.Recipient, p.RecipientType, p.ImageURL)
 
-	var payload CreateMessageTextDTO
-	err := utils.DecodeBody(r, &payload)
-	if err != nil {
-		utils.ErrorResponse(err, w)
-		return
+	if strings.Contains(p.Recipient, "@") {
+		if err := message.SetRecipient(p.Recipient); err != nil {
+			return message_entity.Message{}, err
+		}
 	}
 
-	if payload.ImageURL == "" {
-		utils.ErrorResponse(fmt.Errorf("image_url is required"), w)
-		return
-	}
-
-	err = bootstrap.Services.MessageService.CreateMessage(
-		r.Context(),
-		message_entity.NewMessageWithImage(
-			deviceID,
-			payload.Text,
-			payload.Recipient,
-			payload.RecipientType,
-			payload.ImageURL,
-		),
-	)
-	if err != nil {
-		utils.ErrorResponse(err, w)
-		return
-	}
-
-	utils.SendResponse("success", http.StatusCreated, w)
+	return message, nil
 }
