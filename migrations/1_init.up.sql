@@ -16,7 +16,7 @@ CREATE INDEX idx_devices_created_at ON devices (created_at) WHERE deleted_at IS 
 
 CREATE TABLE messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	external_id VARCHAR(255) NOT NULL,
+    external_id VARCHAR(255) NOT NULL,
     device_id UUID NOT NULL,
     text TEXT NOT NULL,
     recipient VARCHAR(255) NOT NULL,
@@ -31,5 +31,5 @@ CREATE INDEX idx_messages_recipient ON messages (recipient, recipient_type) WHER
 CREATE INDEX idx_messages_device_created_at ON messages (device_id, created_at DESC) WHERE deleted_at IS NULL;
 
 -- +goose Down
-DROP TABLE devices;
 DROP TABLE messages;
+DROP TABLE devices;
