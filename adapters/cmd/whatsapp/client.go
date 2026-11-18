@@ -81,3 +81,13 @@ func (s *WhatsappService) ConnectDevice(ctx context.Context, deviceJID string) e
 	_, err := s.getClient(ctx, deviceJID)
 	return err
 }
+
+// DisconnectAll disconnects every cached client (used on shutdown).
+func DisconnectAll() {
+	cachedClients.mu.Lock()
+	defer cachedClients.mu.Unlock()
+
+	for _, client := range cachedClients.clients {
+		client.Disconnect()
+	}
+}
