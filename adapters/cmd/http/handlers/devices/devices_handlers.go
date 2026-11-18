@@ -9,7 +9,7 @@ import (
 	chi "github.com/go-chi/chi/v5"
 )
 
-func InitDevices(router *chi.Mux) {
+func InitDevices(router chi.Router) {
 	router.Get("/devices", getDevices)
 	router.Get("/devices/{id}", getDevice)
 	router.Post("/devices", createDevice)
@@ -56,7 +56,7 @@ func createDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendResponse(device, http.StatusServiceUnavailable, w)
+	utils.SendResponse(device, http.StatusCreated, w)
 }
 
 func updateDevice(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func updateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SendResponse("success", http.StatusServiceUnavailable, w)
+	utils.SendResponse("success", http.StatusOK, w)
 }
 
 func deleteDevice(w http.ResponseWriter, r *http.Request) {
