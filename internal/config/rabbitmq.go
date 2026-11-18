@@ -1,69 +1,62 @@
 package config
 
 import (
-	"fmt"
+	"net/url"
 	"os"
 	"strings"
 )
 
 type rabbitmqConfigStruct struct {
 	URL      string
-	Host     string
-	Port     string
-	User     string
-	Password string
-	VHost    string
-	//
 	Exchange string
 	Enabled  bool
 }
 
 func LoadRabbitMQEnvironment() (rabbitmqConfigStruct, error) {
-	rabbitmqEnable := os.Getenv("RABBITMQ_ENABLED")
-	rabbitmqEnable = strings.ToLower(rabbitmqEnable)
-	enabled := false
-	if rabbitmqEnable == "true" {
-		enabled = true
-	}
+	enabled := strings.EqualFold(os.Getenv("RABBITMQ_ENABLED"), "true")
 
-	url := os.Getenv("RABBITMQ_URL")
-	if url == "" {
-		host := os.Getenv("RABBITMQ_HOST")
-		if host == "" {
-			host = "localhost"
-		}
-
-		port := os.Getenv("RABBITMQ_PORT")
-		if port == "" {
-			port = "5672"
-		}
-
-		user := os.Getenv("RABBITMQ_USER")
-		if user == "" {
-			user = "guest"
-		}
-
-		password := os.Getenv("RABBITMQ_PASSWORD")
-		if password == "" {
-			password = "guest"
-		}
-
-		vhost := os.Getenv("RABBITMQ_VHOST")
-		if vhost == "" {
-			vhost = "/"
-		}
-
-		url = fmt.Sprintf("amqp://%s:%s@%s:%s%s", user, password, host, port, vhost)
-	}
-
-	exchange := os.Getenv("RABBITMQ_EXCHANGE")
-	if exchange == "" {
-		exchange = "pulse-api"
+	amqpURL := os.Getenv("RABBITMQ_URL")
+	if amqpURL == "" {
+		amqpURL = buildRabbitMQURL(
+			getEnv("RABBITMQ_HOST", "localhost"),
+			getEnv("RABBITMQ_PORT", "5672"),
+			getEnv("RABBITMQ_USER", "guest"),
+			getEnv("RABBITMQ_PASSWORD", "guest"),
+			getEnv("RABBITMQ_VHOST", "/"),
+		)
 	}
 
 	return rabbitmqConfigStruct{
-		URL:      url,
-		Exchange: exchange,
+		URL:      amqpURL,
+		Exchange: getEnv("RABBITMQ_EXCHANGE", "pulse-api"),
 		Enabled:  enabled,
 	}, nil
+}
+
+// buildRabbitMQURL builds an AMQP URL, escaping credentials and vhost.
+func buildRabbitMQURL(host, port, user, password, vhost string) string {
+	u := url.URL{
+		Scheme: "amqp",
+		User:   url.UserPassword(user, password),
+		Host:   host + ":" + port,
+	}
+
+	// "/" is the default vhost and maps to an empty path; any other vhost is
+	// a single path segment and must be escaped (e.g. "/prod" -> "%2Fprod").
+	if vhost != "/" && vhost != "" {
+		u.RawPath = "/" + url.PathEscape(vhost)
+		u.Path = "/" + vhost
+	} else {
+		u.Path = "/"
+	}
+
+	return u.String()
+}
+
+func getEnv(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+
+	return fallback
 }
