@@ -2,6 +2,7 @@ package device_repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/LeonardoSola/pulse-api/internal/ports"
 	pgx "github.com/jackc/pgx/v5"
@@ -48,7 +49,7 @@ func (r *DeviceRepository) Get(ctx context.Context, deviceID string) (device_ent
 		return device_entity.Device{}, err
 	}
 
-	return pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
+	return collectOne(rows)
 }
 
 func (r *DeviceRepository) GetByJID(ctx context.Context, jid string) (device_entity.Device, error) {
@@ -59,7 +60,7 @@ func (r *DeviceRepository) GetByJID(ctx context.Context, jid string) (device_ent
 		return device_entity.Device{}, err
 	}
 
-	return pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
+	return collectOne(rows)
 }
 
 func (r *DeviceRepository) Update(ctx context.Context, device device_entity.Device) error {
@@ -76,16 +77,20 @@ func (r *DeviceRepository) Update(ctx context.Context, device device_entity.Devi
 func (r *DeviceRepository) Delete(ctx context.Context, deviceID string) error {
 	dml := `DELETE FROM devices WHERE id = $1`
 
-	_, err := r.db.Exec(ctx, dml, deviceID)
+	tag, err := r.db.Exec(ctx, dml, deviceID)
 	if err != nil {
 		return err
+	}
+
+	if tag.RowsAffected() == 0 {
+		return device_entity.ErrDeviceNotFound
 	}
 
 	return nil
 }
 
 func (r *DeviceRepository) UpdateJID(ctx context.Context, deviceID string, jid *string) error {
-	dml := `UPDATE devices SET jid = $1 WHERE id = $2`
+	dml := `UPDATE devices SET jid = $1, is_active = ($1::varchar IS NOT NULL), updated_at = NOW() WHERE id = $2`
 
 	_, err := r.db.Exec(ctx, dml, jid, deviceID)
 	if err != nil {
@@ -93,4 +98,14 @@ func (r *DeviceRepository) UpdateJID(ctx context.Context, deviceID string, jid *
 	}
 
 	return nil
+}
+
+// collectOne scans exactly one device and maps "no rows" to ErrDeviceNotFound.
+func collectOne(rows pgx.Rows) (device_entity.Device, error) {
+	device, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[device_entity.Device])
+	if errors.Is(err, pgx.ErrNoRows) {
+		return device_entity.Device{}, device_entity.ErrDeviceNotFound
+	}
+
+	return device, err
 }

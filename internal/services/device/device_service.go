@@ -3,11 +3,14 @@ package device_service
 import (
 	"context"
 	"errors"
+	"log/slog"
 
 	device_entity "github.com/LeonardoSola/pulse-api/internal/entities/device"
 	"github.com/LeonardoSola/pulse-api/internal/ports"
-	"github.com/jackc/pgx/v5"
 )
+
+// QRConnected is sent on the QR channel when the device is already paired.
+const QRConnected = "connected"
 
 type DeviceService struct {
 	DeviceRepository ports.DeviceRepository
@@ -44,9 +47,13 @@ func (s *DeviceService) GetDevices(ctx context.Context) ([]device_entity.Device,
 }
 
 func (s *DeviceService) GetDevice(ctx context.Context, deviceID string) (device_entity.Device, error) {
+	if err := device_entity.ValidateID(deviceID); err != nil {
+		return device_entity.Device{}, err
+	}
+
 	device, err := s.DeviceRepository.Get(ctx, deviceID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, device_entity.ErrDeviceNotFound) {
 			return device_entity.Device{}, device_entity.ErrDeviceNotFound
 		}
 
@@ -57,7 +64,7 @@ func (s *DeviceService) GetDevice(ctx context.Context, deviceID string) (device_
 }
 
 func (s *DeviceService) UpdateDevice(ctx context.Context, deviceID string, payload UpdateDeviceDTO) error {
-	device, err := s.DeviceRepository.Get(ctx, deviceID)
+	device, err := s.GetDevice(ctx, deviceID)
 	if err != nil {
 		return err
 	}
@@ -69,39 +76,41 @@ func (s *DeviceService) UpdateDevice(ctx context.Context, deviceID string, paylo
 		return err
 	}
 
-	err = s.DeviceRepository.Update(ctx, device)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return s.DeviceRepository.Update(ctx, device)
 }
 
+// DeleteDevice removes the device and, if it was paired, its WhatsApp session.
 func (s *DeviceService) DeleteDevice(ctx context.Context, deviceID string) error {
-	err := s.DeviceRepository.Delete(ctx, deviceID)
+	device, err := s.GetDevice(ctx, deviceID)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	if device.JID != nil && *device.JID != "" {
+		if err := s.whatsappService.DeleteDevice(ctx, *device.JID); err != nil {
+			slog.Warn("failed to delete WhatsApp session", "device_id", deviceID, "error", err)
+		}
+	}
+
+	return s.DeviceRepository.Delete(ctx, deviceID)
 }
 
-func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrChan <-chan string, err error) {
-	device, err := s.DeviceRepository.Get(ctx, deviceID)
+// ConnectDevice returns a channel of QR codes to pair the device. If the device
+// is already paired, the channel yields QRConnected and is closed.
+func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (<-chan string, error) {
+	device, err := s.GetDevice(ctx, deviceID)
 	if err != nil {
 		return nil, err
 	}
 
-	if device.JID != nil {
+	if device.JID != nil && *device.JID != "" {
 		ok, err := s.whatsappService.CheckDevice(ctx, *device.JID)
 		if err == nil && ok {
-			device.IsActive = true
-			err = s.DeviceRepository.Update(ctx, device)
-			if err != nil {
-				return nil, err
-			}
+			connected := make(chan string, 1)
+			connected <- QRConnected
+			close(connected)
 
-			return qrChan, nil
+			return connected, nil
 		}
 	}
 
@@ -112,11 +121,12 @@ func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrC
 
 	go func() {
 		for jid := range jidChan {
-			if jid != "" {
-				err = s.DeviceRepository.UpdateJID(context.Background(), deviceID, &jid)
-				if err != nil {
-					continue
-				}
+			if jid == "" {
+				continue
+			}
+
+			if err := s.DeviceRepository.UpdateJID(context.Background(), deviceID, &jid); err != nil {
+				slog.Error("failed to store device JID", "device_id", deviceID, "error", err)
 			}
 		}
 	}()
@@ -124,6 +134,8 @@ func (s *DeviceService) ConnectDevice(ctx context.Context, deviceID string) (qrC
 	return qrChan, nil
 }
 
+// StartDevices reconnects every paired device. A device that fails to
+// connect is logged and skipped so it does not block the others.
 func (s *DeviceService) StartDevices(ctx context.Context) error {
 	devices, err := s.DeviceRepository.GetAll(ctx)
 	if err != nil {
@@ -135,9 +147,8 @@ func (s *DeviceService) StartDevices(ctx context.Context) error {
 			continue
 		}
 
-		err = s.whatsappService.ConnectDevice(ctx, *device.JID)
-		if err != nil {
-			return err
+		if err := s.whatsappService.ConnectDevice(ctx, *device.JID); err != nil {
+			slog.Error("failed to connect device", "device_id", device.ID, "error", err)
 		}
 	}
 
