@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"log/slog"
 	"net/http"
 
 	"github.com/LeonardoSola/pulse-api/internal/config"
@@ -13,16 +16,7 @@ type Success struct {
 }
 
 func SendResponse(data any, status int, w http.ResponseWriter) {
-	w.WriteHeader(status)
-
-	response := Success{
-		Data: data,
-	}
-
-	err := writeJSON(w, response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	writeJSON(w, status, Success{Data: data})
 }
 
 type Error struct {
@@ -32,42 +26,55 @@ type Error struct {
 	Level   int    `json:"level"`
 }
 
-func ErrorResponse(data error, w http.ResponseWriter) {
+// ErrorResponse writes err as a JSON error body. CustomError values keep their
+// status and message; any other error is reported as a 500 without leaking its
+// details outside development mode.
+func ErrorResponse(err error, w http.ResponseWriter) {
 	var response Error
-	if e, ok := data.(custom_error.CustomError); ok {
+
+	var customErr custom_error.CustomError
+	if errors.As(err, &customErr) {
 		response = Error{
-			Message: e.Message,
-			Status:  e.Status,
+			Message: customErr.Message,
+			Status:  customErr.Status,
 		}
 
-		w.WriteHeader(e.Status)
+		if customErr.Level != custom_error.LevelInfo {
+			slog.Log(context.Background(), slog.Level(customErr.Level), customErr.Message, "error", err.Error())
+		}
 
-		if e.Err != nil && config.Config.Env == "development" {
-			response.Info = e.Err.Error()
-			response.Level = int(e.Level)
+		if customErr.Err != nil && isDevelopment() {
+			response.Info = customErr.Err.Error()
+			response.Level = int(customErr.Level)
 		}
 	} else {
+		slog.Error("unhandled error", "error", err.Error())
+
 		response = Error{
-			Message: data.Error(),
+			Message: "Internal server error",
 			Status:  http.StatusInternalServerError,
 		}
 
-		w.WriteHeader(http.StatusInternalServerError)
+		if isDevelopment() {
+			response.Info = err.Error()
+		}
 	}
 
-	err := writeJSON(w, response)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	writeJSON(w, response.Status, response)
 }
 
-func writeJSON(w http.ResponseWriter, data any) error {
+func isDevelopment() bool {
+	return config.Config != nil && config.Config.Env == "development"
+}
+
+func writeJSON(w http.ResponseWriter, status int, data any) {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return err
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	_, err = w.Write(jsonData)
-
-	return err
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	_, _ = w.Write(jsonData)
 }

@@ -1,11 +1,7 @@
 package custom_error
 
 import (
-	"context"
 	"fmt"
-	"log/slog"
-
-	"github.com/LeonardoSola/pulse-api/internal/logger"
 )
 
 type ErrorLevel int8
@@ -43,15 +39,16 @@ func (err CustomError) ToString() string {
 }
 
 func (err CustomError) Error() string {
-	errMessage := fmt.Sprintf("Error: %s", err.ToString())
-
 	if err.Err != nil {
-		errMessage = "; " + err.Err.Error()
+		return err.ToString() + "; " + err.Err.Error()
 	}
 
-	logger.Log.Log(context.Background(), slog.Level(err.Level), "Error", "error", errMessage)
-
 	return err.ToString()
+}
+
+// Unwrap exposes the underlying error to errors.Is / errors.As.
+func (err CustomError) Unwrap() error {
+	return err.Err
 }
 
 func (err CustomError) SetError(e error) CustomError {
