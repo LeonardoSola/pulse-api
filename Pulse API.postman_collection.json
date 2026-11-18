@@ -37,7 +37,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "3fa2820a-853e-4bbd-90de-469f7ee0a229"
+                  "value": "{{device_id}}"
                 }
               ]
             }
@@ -72,37 +72,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "3fa2820a-853e-4bbd-90de-469f7ee0a229"
-                }
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Group",
-      "item": [
-        {
-          "name": "Get All",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/devices/:id/groups",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "devices",
-                ":id",
-                "groups"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "3fa2820a-853e-4bbd-90de-469f7ee0a229"
+                  "value": "{{device_id}}"
                 }
               ]
             }
@@ -179,7 +149,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "3fa2820a-853e-4bbd-90de-469f7ee0a229"
+                  "value": "{{device_id}}"
                 }
               ]
             },
@@ -264,7 +234,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "teste"
+                  "value": "{{device_id}}"
                 }
               ]
             },
@@ -314,7 +284,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "3fa2820a-853e-4bbd-90de-469f7ee0a229"
+                  "value": "{{device_id}}"
                 }
               ]
             },
@@ -364,7 +334,7 @@
               "variable": [
                 {
                   "key": "id",
-                  "value": "fbce5f3d-03ce-4365-b1ad-fcb471b55af0"
+                  "value": "{{device_id}}"
                 }
               ]
             },
@@ -378,13 +348,13 @@
       "name": "Adapters",
       "item": [
         {
-          "name": "Send Text Message",
+          "name": "WAHA: Send Text Message",
           "request": {
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"recipient\": \"{{your-number}}@s.whatsapp.net\",\n    \"text\": \"teste: {{$randomLoremSentence}}\"\n}",
+              "raw": "{\n    \"session\": \"{{device_id}}\",\n    \"chatId\": \"{{your-number}}@c.us\",\n    \"text\": \"test: {{$randomLoremSentence}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -392,14 +362,14 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/adapters/waha/messages/sendText",
+              "raw": "{{base_url}}/adapters/waha/api/sendText",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "adapters",
                 "waha",
-                "messages",
+                "api",
                 "sendText"
               ]
             }
@@ -448,8 +418,20 @@
   ],
   "variable": [
     {
-      "key": "id",
-      "value": "1"
+      "key": "base_url",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "API_KEY",
+      "value": ""
+    },
+    {
+      "key": "device_id",
+      "value": ""
+    },
+    {
+      "key": "your-number",
+      "value": "5511999999999"
     }
   ]
 }
