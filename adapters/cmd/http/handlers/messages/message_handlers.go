@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func InitMessages(router *chi.Mux) {
+func InitMessages(router chi.Router) {
 	router.Post("/devices/{deviceId}/messages/sendText", createTextMessage)
 	router.Post("/devices/{deviceId}/messages/sendImage", createImageMessage)
 }

@@ -8,7 +8,7 @@ import (
 	chi "github.com/go-chi/chi/v5"
 )
 
-func InitApp(router *chi.Mux) {
+func InitApp(router chi.Router) {
 	router.Get("/health", health)
 }
 

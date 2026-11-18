@@ -14,7 +14,7 @@ import (
 )
 
 type services struct {
-	AuthService    *auth_service.JWTService
+	AuthService    *auth_service.APIKeyService
 	DeviceService  *device_service.DeviceService
 	MessageService *message_service.MessageService
 }
@@ -30,7 +30,7 @@ func Init() {
 	}
 
 	Services = &services{
-		AuthService:    auth_service.NewJWTService(),
+		AuthService:    auth_service.NewAPIKeyService(config.Config.Server.APIKey),
 		DeviceService:  device_service.NewDeviceService(db.DeviceRepository, whats),
 		MessageService: message_service.NewMessageService(db.MessageRepository, db.DeviceRepository, whats, messaging),
 	}

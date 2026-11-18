@@ -4,14 +4,12 @@ import (
 	"net/http"
 
 	"github.com/LeonardoSola/pulse-api/adapters/bootstrap"
-	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/middleware"
 	"github.com/LeonardoSola/pulse-api/adapters/cmd/http/utils"
 	message_entity "github.com/LeonardoSola/pulse-api/internal/entities/message"
 	"github.com/go-chi/chi/v5"
 )
 
 func initWaha(router chi.Router) {
-	router.Use(middleware.AuthAPIKey)
 	router.Post("/api/sendText", sendText)
 }
 
@@ -30,10 +28,6 @@ func sendText(w http.ResponseWriter, r *http.Request) {
 	}
 
 	message := message_entity.NewMessage(payload.DeviceID, payload.Text, payload.Recipient, message_entity.RecipientTypeUser, "")
-	if err != nil {
-		utils.ErrorResponse(err, w)
-		return
-	}
 
 	err = message.SetRecipient(payload.Recipient)
 	if err != nil {
