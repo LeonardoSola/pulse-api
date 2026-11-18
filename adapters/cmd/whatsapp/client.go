@@ -2,22 +2,60 @@ package whatsapp
 
 import (
 	"context"
+	"sync"
 
 	"github.com/LeonardoSola/pulse-api/adapters/cmd/whatsapp/events"
 	"go.mau.fi/whatsmeow"
 	waLog "go.mau.fi/whatsmeow/util/log"
 )
 
-var cachedClients map[string]*whatsmeow.Client = make(map[string]*whatsmeow.Client)
+// clientCache keeps one connected whatsmeow client per device JID.
+type clientCache struct {
+	mu      sync.Mutex
+	clients map[string]*whatsmeow.Client
+}
 
+var cachedClients = &clientCache{clients: make(map[string]*whatsmeow.Client)}
+
+func (c *clientCache) get(jid string) (*whatsmeow.Client, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	client, ok := c.clients[jid]
+	return client, ok
+}
+
+func (c *clientCache) set(jid string, client *whatsmeow.Client) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.clients[jid] = client
+}
+
+func (c *clientCache) remove(jid string) (*whatsmeow.Client, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	client, ok := c.clients[jid]
+	delete(c.clients, jid)
+	return client, ok
+}
+
+func newClient(device *whatsmeowDevice) *whatsmeow.Client {
+	return whatsmeow.NewClient(device, waLog.Stdout("Client", "ERROR", true))
+}
+
+// registerClient attaches the incoming-event handler and caches the client.
+func registerClient(deviceJID string, client *whatsmeow.Client) {
+	client.AddEventHandler(events.EventHandler(deviceJID))
+	cachedClients.set(deviceJID, client)
+}
+
+// getClient returns a connected client for the device, creating it if needed.
 func (s *WhatsappService) getClient(ctx context.Context, deviceJID string) (*whatsmeow.Client, error) {
-	if client, ok := cachedClients[deviceJID]; ok {
+	if client, ok := cachedClients.get(deviceJID); ok {
 		if client.IsConnected() {
 			return client, nil
 		}
 
-		err := client.Connect()
-		if err != nil {
+		if err := client.Connect(); err != nil {
 			return nil, err
 		}
 
@@ -29,35 +67,17 @@ func (s *WhatsappService) getClient(ctx context.Context, deviceJID string) (*wha
 		return nil, err
 	}
 
-	client := whatsmeow.NewClient(device, waLog.Stdout("Client", "ERROR", true))
-	client.AddEventHandler(events.EventHandler(deviceJID))
-	err = client.Connect()
-	if err != nil {
+	client := newClient(device)
+	if err := client.Connect(); err != nil {
 		return nil, err
 	}
 
-	cachedClients[deviceJID] = client
+	registerClient(deviceJID, client)
 	return client, nil
 }
 
+// ConnectDevice makes sure a paired device has a connected client listening for events.
 func (s *WhatsappService) ConnectDevice(ctx context.Context, deviceJID string) error {
-	client, err := s.getClient(ctx, deviceJID)
-	if err != nil {
-		return err
-	}
-
-	if client.IsConnected() {
-		return nil
-	}
-
-	client.AddEventHandler(events.EventHandler(deviceJID))
-
-	err = client.Connect()
-	if err != nil {
-		return err
-	}
-
-	cachedClients[deviceJID] = client
-
-	return nil
+	_, err := s.getClient(ctx, deviceJID)
+	return err
 }
